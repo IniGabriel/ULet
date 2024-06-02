@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'package:flutter/material.dart';
 
 void main() {
@@ -34,9 +36,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
           children: [
             // Container for the profile picture
             Container(
-              color: Colors.red[600], // Latar belakang merah
+              color: Color(0xFFA41724), // Latar belakang merah
               width: double.infinity,
-              padding: EdgeInsets.only(left: 22, right: 22, top: 15, bottom: 56),
+              padding:
+                  EdgeInsets.only(left: 22, right: 22, top: 15, bottom: 56),
               child: Column(
                 children: [
                   Text(
@@ -125,37 +128,38 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             SizedBox(height: 40), // Spacer between image and text
             // Text "Halo"
-          OpsiProfile(
-            icon: Icons.lock_reset, // Ikon untuk opsi pertama
-            text: "Change Password", // Teks untuk opsi pertama
-          ),
-          OpsiProfile(
-            icon: Icons.account_circle, // Ikon untuk opsi kedua
-            text: "Profile", // Teks untuk opsi kedua
-          ),
-          OpsiProfile(
-            icon: Icons.phone_android, // Ikon untuk opsi ketiga
-            text: "Mobile", // Teks untuk opsi ketiga
-          ),
-          OpsiProfile(
-            icon: Icons.home, // Ikon untuk opsi keempat
-            text: "Home", // Teks untuk opsi keempat
-          ),
+            OpsiProfile(
+              icon: Icons.lock_reset, // Ikon untuk opsi pertama
+              text: "Change Password", // Teks untuk opsi pertama
+            ),
+            OpsiProfile(
+              icon: Icons.account_circle, // Ikon untuk opsi kedua
+              text: "Profile", // Teks untuk opsi kedua
+            ),
+            OpsiProfile(
+              icon: Icons.phone_android, // Ikon untuk opsi ketiga
+              text: "Mobile", // Teks untuk opsi ketiga
+            ),
+            OpsiProfile(
+              icon: Icons.home, // Ikon untuk opsi keempat
+              text: "Home", // Teks untuk opsi keempat
+            ),
             SizedBox(height: 50),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 22), // Tambahkan padding kiri dan kanan
+              padding: const EdgeInsets.symmetric(
+                  horizontal: 22), // Tambahkan padding kiri dan kanan
               child: ElevatedButton(
                 onPressed: () {
-                  print("Button Log Out Di Tekan!");
+                  // print("Button Log Out Di Tekan!");
                 },
                 style: ElevatedButton.styleFrom(
-                  primary: Colors.red[600],
+                  primary: Color(0xFFA41724),
                   onPrimary: Colors.white,
                   textStyle: TextStyle(
                     fontSize: 18,
                   ),
                   minimumSize: Size(double.infinity, 50),
-                  ),
+                ),
                 child: Text("Log Out"),
               ),
             ),
@@ -170,7 +174,8 @@ class OpsiProfile extends StatelessWidget {
   final IconData icon;
   final String text;
 
-  const OpsiProfile({Key? key, required this.icon, required this.text}) : super(key: key);
+  const OpsiProfile({Key? key, required this.icon, required this.text})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
