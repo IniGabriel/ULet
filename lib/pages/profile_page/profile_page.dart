@@ -60,7 +60,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           image: DecorationImage(
-                            image: AssetImage('gambar_/tester_.jpg'),
+                            image: AssetImage('images/tester_.jpg'),
                             fit: BoxFit.cover,
                           ),
                         ),

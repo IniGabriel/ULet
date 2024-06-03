@@ -1,7 +1,7 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
 import 'package:flutter/material.dart';
-import 'package:ulet_1/halaman/profile_page/profile_page.dart';
+import 'package:ulet_1/pages/profile_page/profile_page.dart';
 
 void main() {
   runApp(MyApp());
@@ -55,7 +55,7 @@ class _HomePageState extends State<HomePage> {
                 Padding(
                   padding: EdgeInsets.symmetric(vertical: 3, horizontal: 20),
                   child: Image.asset(
-                    'gambar_/ULET2.png',
+                    'images/ULET2.png',
                     width: 100,
                     height: 100,
                   ),
