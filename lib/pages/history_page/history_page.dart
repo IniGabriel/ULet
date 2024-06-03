@@ -65,7 +65,6 @@ class _HistoryPageState extends State<HistoryPage> {
     double screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      resizeToAvoidBottomInset: false,
       body: Column(
         children: [
           Container(

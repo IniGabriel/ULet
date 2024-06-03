@@ -170,6 +170,7 @@ class _SignUpState extends State<SignUp> {
                                             FilteringTextInputFormatter
                                                 .digitsOnly,
                                           ],
+                                          textInputAction: TextInputAction.next,
                                           decoration: const InputDecoration(
                                             labelText: '812-1234-XXXX',
                                             floatingLabelBehavior:
@@ -277,7 +278,7 @@ class _SignUpState extends State<SignUp> {
                                   LengthLimitingTextInputFormatter(6),
                                   FilteringTextInputFormatter.digitsOnly,
                                 ],
-                                textInputAction: TextInputAction.next,
+                                textInputAction: TextInputAction.done,
                                 decoration: const InputDecoration(
                                   labelText: '6 digits',
                                   floatingLabelBehavior:
