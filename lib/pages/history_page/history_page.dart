@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:ulet_1/halaman/home_page/home_page.dart';
+import 'package:ulet_1/pages/home_page/home_page.dart';
 import 'dart:math';
 
-import 'package:ulet_1/halaman/profile_page/profile_page.dart';
+import 'package:ulet_1/pages/profile_page/profile_page.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -65,6 +65,7 @@ class _HistoryPageState extends State<HistoryPage> {
     double screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: Column(
         children: [
           Container(
@@ -126,7 +127,9 @@ class _HistoryPageState extends State<HistoryPage> {
                           ),
                           Text(
                             _randomAmounts[index],
-                            style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold),
                           ),
                         ],
                       ),
@@ -139,7 +142,8 @@ class _HistoryPageState extends State<HistoryPage> {
         ],
       ),
       bottomNavigationBar: Stack(
-        clipBehavior: Clip.none, // Mengizinkan widget untuk melewati batas Stack
+        clipBehavior:
+            Clip.none, // Mengizinkan widget untuk melewati batas Stack
         children: [
           Container(
             decoration: BoxDecoration(
@@ -196,19 +200,22 @@ class _HistoryPageState extends State<HistoryPage> {
           ),
           Positioned(
             top: -30, // Sesuaikan dengan berapa jauh ikon menonjol ke atas
-            left: MediaQuery.of(context).size.width / 2 - 31.5, // Tengah-tengah layar
+            left: MediaQuery.of(context).size.width / 2 -
+                31.5, // Tengah-tengah layar
             child: Container(
               width: 65,
               height: 65,
               decoration: BoxDecoration(
                 color: Color(0xFFA41724),
-                borderRadius: BorderRadius.circular(10), // Membuat lingkaran penuh
+                borderRadius:
+                    BorderRadius.circular(10), // Membuat lingkaran penuh
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withOpacity(0.3),
                     spreadRadius: 2,
                     blurRadius: 10,
-                    offset: Offset(0, 3), // Ubah offset agar shadow berada di bawah bottom nav
+                    offset: Offset(0,
+                        3), // Ubah offset agar shadow berada di bawah bottom nav
                   ),
                 ],
               ),
