@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:country_flags/country_flags.dart';
-import '../../utils/colors.dart';
-import '../../utils/font_size.dart';
+import 'package:flutter/services.dart';
+import 'package:ulet_1/utils/colors.dart';
+import 'package:ulet_1/utils/font_size.dart';
 
 import 'package:ulet_1/pages/user_form/sign_up.dart';
 import 'package:ulet_1/pages/user_form/pin_verification.dart';
@@ -26,15 +27,14 @@ class _SignInState extends State<SignIn> {
 
   void _checkPhoneNumberLength() {
     setState(() {
-      _isContinueButtonEnabled =
-          _phoneNumberLengthController.text.length >= 10 &&
-              _phoneNumberLengthController.text.length <= 14;
+      _isContinueButtonEnabled = _phoneNumberLengthController.text.length >= 10;
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: SafeArea(
         child: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
@@ -116,6 +116,12 @@ class _SignInState extends State<SignIn> {
                                               _phoneNumberLengthController,
                                           onChanged: (_) =>
                                               _checkPhoneNumberLength(),
+                                          inputFormatters: [
+                                            LengthLimitingTextInputFormatter(
+                                                14),
+                                            FilteringTextInputFormatter
+                                                .digitsOnly,
+                                          ],
                                           decoration: const InputDecoration(
                                             labelText: '812-1234-XXXX',
                                             floatingLabelBehavior:

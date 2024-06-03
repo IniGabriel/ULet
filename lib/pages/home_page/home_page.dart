@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:ulet_1/pages/profile_page/profile_page.dart';
+import 'package:ulet_1/pages/history_page/history_page.dart';
 
 void main() {
   runApp(MyApp());
@@ -30,7 +31,12 @@ class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0; // Indeks item yang dipilih
 
   void _onItemTapped(int index) {
-    if (index == 4) {
+    if (index == 3) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => HistoryPage()),
+      );
+    } else if (index == 4) {
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => ProfileScreen()),
@@ -45,6 +51,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: Container(
         color: Color(0xFFFFF6F6),
         child: Column(
@@ -220,7 +227,9 @@ class _HomePageState extends State<HomePage> {
                     children: [
                       GestureDetector(
                         onTap: () {
-                          // Tindakan ketika kotak ketiga ditekan
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: (BuildContext context) =>
+                                  HistoryPage()));
                         },
                         child: Column(
                           children: [

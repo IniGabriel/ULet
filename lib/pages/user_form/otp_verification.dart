@@ -128,7 +128,7 @@ class _OTPVerificationState extends State<OTPVerification> {
                       backgroundColor: CustomColors.primaryColor,
                     ),
                     child: const Text(
-                      'Continue (PLACEHOLDER)',
+                      'Continue',
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 24,

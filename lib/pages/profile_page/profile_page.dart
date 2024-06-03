@@ -8,6 +8,8 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -17,6 +19,8 @@ class MyApp extends StatelessWidget {
 }
 
 class ProfileScreen extends StatefulWidget {
+  const ProfileScreen({super.key});
+
   @override
   _ProfileScreenState createState() => _ProfileScreenState();
 }
@@ -25,6 +29,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       // appBar: AppBar(
       //   title: Text('Profile'),
       //   centerTitle: true,
@@ -161,8 +166,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   // print("Button Log Out Di Tekan!");
                 },
                 style: ElevatedButton.styleFrom(
-                  primary: Color(0xFFA41724),
-                  onPrimary: Colors.white,
+                  foregroundColor: Colors.white,
+                  backgroundColor: Color(0xFFA41724),
                   textStyle: TextStyle(
                     fontSize: 18,
                   ),

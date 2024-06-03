@@ -95,16 +95,17 @@ class _PINVerificationState extends State<PINVerification> {
                 ),
                 const SizedBox(height: 15),
                 Pinput(
-                  length: 4,
-                  pinAnimationType: PinAnimationType.slide,
+                  length: 6,
                   controller: controller,
                   focusNode: focusNode,
+                  pinAnimationType: PinAnimationType.slide,
                   defaultPinTheme: defaultPinTheme,
                   showCursor: true,
                   cursor: cursor,
                   preFilledWidget: preFilledWidget,
                   closeKeyboardWhenCompleted: true,
                   autofocus: true,
+                  obscureText: true,
                 ),
                 const SizedBox(height: 50),
                 Container(
@@ -128,7 +129,7 @@ class _PINVerificationState extends State<PINVerification> {
                       backgroundColor: CustomColors.primaryColor,
                     ),
                     child: const Text(
-                      'Continue (PLACEHOLDER)',
+                      'Continue',
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 24,

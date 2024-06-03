@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:country_flags/country_flags.dart';
 import 'package:flutter/services.dart';
-import '../../utils/colors.dart';
-import '../../utils/font_size.dart';
+import 'package:ulet_1/utils/colors.dart';
+import 'package:ulet_1/utils/font_size.dart';
 
 import 'package:ulet_1/pages/user_form/otp_verification.dart';
 import 'package:ulet_1/pages/user_form/sign_in.dart';
@@ -18,12 +18,16 @@ class _SignUpState extends State<SignUp> {
   final TextEditingController _phoneNumberLengthController =
       TextEditingController();
   final TextEditingController _fullNameController = TextEditingController();
+  final TextEditingController _pinController = TextEditingController();
+  final TextEditingController _confirmPinController = TextEditingController();
   bool _isContinueButtonEnabled = false;
 
   @override
   void dispose() {
     _phoneNumberLengthController.dispose();
     _fullNameController.dispose();
+    _pinController.dispose();
+    _confirmPinController.dispose();
     super.dispose();
   }
 
@@ -31,14 +35,16 @@ class _SignUpState extends State<SignUp> {
     setState(() {
       _isContinueButtonEnabled =
           _phoneNumberLengthController.text.length >= 10 &&
-              _phoneNumberLengthController.text.length <= 14 &&
-              _fullNameController.text.isNotEmpty;
+              _fullNameController.text.isNotEmpty &&
+              _pinController.text.length == 6 &&
+              _confirmPinController.text.length == 6;
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: SafeArea(
         child: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
@@ -46,15 +52,6 @@ class _SignUpState extends State<SignUp> {
             child: Center(
               child: Column(
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.only(top: 40.0, bottom: 20.0),
-                    child: Image.asset(
-                      'images/ULET.png',
-                      width: 200,
-                      height: 200,
-                      fit: BoxFit.contain,
-                    ),
-                  ),
                   const SizedBox(
                     height: 10,
                   ),
@@ -167,6 +164,12 @@ class _SignUpState extends State<SignUp> {
                                           controller:
                                               _phoneNumberLengthController,
                                           onChanged: (_) => _checkFields(),
+                                          inputFormatters: [
+                                            LengthLimitingTextInputFormatter(
+                                                14),
+                                            FilteringTextInputFormatter
+                                                .digitsOnly,
+                                          ],
                                           decoration: const InputDecoration(
                                             labelText: '812-1234-XXXX',
                                             floatingLabelBehavior:
@@ -194,6 +197,108 @@ class _SignUpState extends State<SignUp> {
                                   ),
                                 ),
                               ],
+                            ),
+                          ],
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(20.0, 20.0, 30.0, 0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'PIN',
+                              style: TextStyle(
+                                fontSize: CustomFontSize.primaryFontSize,
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 5.0,
+                            ),
+                            SizedBox(
+                              height: 40.0,
+                              child: TextField(
+                                controller: _pinController,
+                                obscureText: true,
+                                keyboardType: TextInputType.phone,
+                                onChanged: (_) => _checkFields(),
+                                inputFormatters: [
+                                  LengthLimitingTextInputFormatter(6),
+                                  FilteringTextInputFormatter.digitsOnly,
+                                ],
+                                textInputAction: TextInputAction.next,
+                                decoration: const InputDecoration(
+                                  labelText: '6 digits',
+                                  floatingLabelBehavior:
+                                      FloatingLabelBehavior.never,
+                                  focusedBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: CustomColors.primaryColor,
+                                    ),
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: CustomColors.primaryColor,
+                                    ),
+                                  ),
+                                  contentPadding:
+                                      EdgeInsets.symmetric(horizontal: 15.0),
+                                ),
+                                style: const TextStyle(
+                                  fontSize: CustomFontSize.primaryFontSize,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(20.0, 20.0, 30.0, 0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'Confirm PIN',
+                              style: TextStyle(
+                                fontSize: CustomFontSize.primaryFontSize,
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 5.0,
+                            ),
+                            SizedBox(
+                              height: 40.0,
+                              child: TextField(
+                                controller: _confirmPinController,
+                                obscureText: true,
+                                keyboardType: TextInputType.phone,
+                                onChanged: (_) => _checkFields(),
+                                inputFormatters: [
+                                  LengthLimitingTextInputFormatter(6),
+                                  FilteringTextInputFormatter.digitsOnly,
+                                ],
+                                textInputAction: TextInputAction.next,
+                                decoration: const InputDecoration(
+                                  labelText: '6 digits',
+                                  floatingLabelBehavior:
+                                      FloatingLabelBehavior.never,
+                                  focusedBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: CustomColors.primaryColor,
+                                    ),
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: CustomColors.primaryColor,
+                                    ),
+                                  ),
+                                  contentPadding:
+                                      EdgeInsets.symmetric(horizontal: 15.0),
+                                ),
+                                style: const TextStyle(
+                                  fontSize: CustomFontSize.primaryFontSize,
+                                ),
+                              ),
                             ),
                           ],
                         ),
