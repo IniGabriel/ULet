@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:country_flags/country_flags.dart';
-import 'package:ulet_1/pages/user_form/otp_verification.dart';
-import 'package:ulet_1/pages/user_form/sign_in.dart';
+import 'package:flutter/services.dart';
 import '../../utils/colors.dart';
 import '../../utils/font_size.dart';
+
+import 'package:ulet_1/pages/user_form/otp_verification.dart';
+import 'package:ulet_1/pages/user_form/sign_in.dart';
 
 class SignUp extends StatefulWidget {
   const SignUp({super.key});
@@ -38,9 +40,9 @@ class _SignUpState extends State<SignUp> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: Form(
-          child: SingleChildScrollView(
-            physics: const BouncingScrollPhysics(),
+        child: SingleChildScrollView(
+          physics: const BouncingScrollPhysics(),
+          child: Form(
             child: Center(
               child: Column(
                 children: [
@@ -92,23 +94,31 @@ class _SignUpState extends State<SignUp> {
                               child: TextField(
                                 controller: _fullNameController,
                                 onChanged: (_) => _checkFields(),
+                                textInputAction: TextInputAction.next,
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.allow(
+                                      RegExp(r'[a-zA-Z\s]+')),
+                                ],
                                 decoration: const InputDecoration(
                                   labelText: 'Andika Setiawan',
                                   floatingLabelBehavior:
                                       FloatingLabelBehavior.never,
                                   focusedBorder: OutlineInputBorder(
                                     borderSide: BorderSide(
-                                        color: CustomColors.primaryColor),
+                                      color: CustomColors.primaryColor,
+                                    ),
                                   ),
                                   enabledBorder: OutlineInputBorder(
                                     borderSide: BorderSide(
-                                        color: CustomColors.primaryColor),
+                                      color: CustomColors.primaryColor,
+                                    ),
                                   ),
                                   contentPadding:
                                       EdgeInsets.symmetric(horizontal: 15.0),
                                 ),
                                 style: const TextStyle(
-                                    fontSize: CustomFontSize.primaryFontSize),
+                                  fontSize: CustomFontSize.primaryFontSize,
+                                ),
                               ),
                             ),
                           ],
@@ -194,13 +204,12 @@ class _SignUpState extends State<SignUp> {
                         child: ElevatedButton(
                           onPressed: _isContinueButtonEnabled
                               ? () {
-                                  Navigator.pushAndRemoveUntil(
+                                  Navigator.push(
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) =>
                                           const OTPVerification(),
                                     ),
-                                    (route) => false,
                                   );
                                 }
                               : null,
@@ -235,11 +244,12 @@ class _SignUpState extends State<SignUp> {
                           ),
                           GestureDetector(
                             onTap: () {
-                              Navigator.push(
+                              Navigator.pushAndRemoveUntil(
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) => const SignIn(),
                                 ),
+                                (route) => false,
                               );
                             },
                             child: const Text(

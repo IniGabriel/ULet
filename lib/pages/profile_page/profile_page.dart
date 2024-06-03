@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:flutter/material.dart';
+import 'package:ulet_1/pages/user_form/sign_in.dart';
 
 void main() {
   runApp(MyApp());
@@ -150,6 +151,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   horizontal: 22), // Tambahkan padding kiri dan kanan
               child: ElevatedButton(
                 onPressed: () {
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const SignIn(),
+                    ),
+                    (route) => false,
+                  );
                   // print("Button Log Out Di Tekan!");
                 },
                 style: ElevatedButton.styleFrom(

@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:country_flags/country_flags.dart';
 import '../../utils/colors.dart';
 import '../../utils/font_size.dart';
+
 import 'package:ulet_1/pages/user_form/sign_up.dart';
+import 'package:ulet_1/pages/user_form/pin_verification.dart';
 
 class SignIn extends StatefulWidget {
   const SignIn({super.key});
@@ -34,9 +36,9 @@ class _SignInState extends State<SignIn> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: Form(
-          child: SingleChildScrollView(
-            physics: const BouncingScrollPhysics(),
+        child: SingleChildScrollView(
+          physics: const BouncingScrollPhysics(),
+          child: Form(
             child: Center(
               child: Column(
                 children: [
@@ -148,7 +150,17 @@ class _SignInState extends State<SignIn> {
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 20.0),
                         child: ElevatedButton(
-                          onPressed: _isContinueButtonEnabled ? () {} : null,
+                          onPressed: _isContinueButtonEnabled
+                              ? () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          const PINVerification(),
+                                    ),
+                                  );
+                                }
+                              : null,
                           style: ElevatedButton.styleFrom(
                             padding: const EdgeInsets.symmetric(vertical: 15),
                             shape: RoundedRectangleBorder(
