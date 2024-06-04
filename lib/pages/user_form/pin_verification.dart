@@ -3,8 +3,6 @@ import 'package:pinput/pinput.dart';
 import 'package:ulet_1/pages/home_page/bottom_navbar.dart';
 import 'package:ulet_1/utils/colors.dart';
 
-import 'package:ulet_1/pages/home_page/home_page.dart';
-
 class PINVerification extends StatefulWidget {
   const PINVerification({super.key});
 
