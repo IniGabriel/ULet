@@ -7,17 +7,6 @@ void main() {
   runApp(MyApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: HomePage(),
-    );
-  }
-}
-
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
 
@@ -27,20 +16,22 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   bool isHidden = false; // Variabel untuk melacak status visibilitas
-  int _selectedIndex = 0; // Indeks item yang dipilih
+  // int _selectedIndex = 0; // Indeks item yang dipilih
 
-  void _onItemTapped(int index) {
-    if (index == 4) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => ProfileScreen()),
-      );
-    } else {
-      setState(() {
-        _selectedIndex = index; // Update indeks saat item dipilih
-      });
-    }
-  }
+  // void _onItemTapped(int index) {
+  //   if (index == 4) {
+  //     Navigator.push(
+  //       context,
+  //       MaterialPageRoute(builder: (context) => ProfileScreen()),
+  //     );
+  //   } else {
+  //     setState(() {
+  //       _selectedIndex = index; // Update indeks saat item dipilih
+  //     });
+  //   }
+  // }
+
+  // var _pageController = PageContoller();
 
   @override
   Widget build(BuildContext context) {
@@ -291,93 +282,6 @@ class _HomePageState extends State<HomePage> {
             ),
           ],
         ),
-      ),
-      bottomNavigationBar: Stack(
-        clipBehavior:
-            Clip.none, // Mengizinkan widget untuk melewati batas Stack
-        children: [
-          Container(
-            decoration: BoxDecoration(
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.3), // Lebih gelap sedikit
-                  spreadRadius: 2,
-                  blurRadius: 50,
-                  offset: Offset(0, 0), // Shadow di atas BottomNavigationBar
-                ),
-              ],
-            ),
-            child: BottomNavigationBar(
-              type: BottomNavigationBarType.fixed,
-              items: [
-                BottomNavigationBarItem(
-                  icon: Icon(
-                    Icons.home,
-                    size: 32,
-                  ),
-                  label: 'Home',
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(
-                    Icons.compare_arrows,
-                    size: 32,
-                  ),
-                  label: 'Transfer',
-                ),
-                BottomNavigationBarItem(
-                  icon: SizedBox.shrink(), // Tempat untuk ikon QR code scanner
-                  label: '',
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(
-                    Icons.history,
-                    size: 32,
-                  ),
-                  label: 'History',
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(
-                    Icons.person,
-                    size: 32,
-                  ),
-                  label: 'Profile',
-                ),
-              ],
-              currentIndex: _selectedIndex,
-              selectedItemColor: const Color.fromARGB(255, 0, 0, 0),
-              unselectedItemColor: Color(0xFFA41724),
-              onTap: _onItemTapped,
-            ),
-          ),
-          Positioned(
-            top: -30, // Sesuaikan dengan berapa jauh ikon menonjol ke atas
-            left: MediaQuery.of(context).size.width / 2 -
-                31.5, // Tengah-tengah layar
-            child: Container(
-              width: 65,
-              height: 65,
-              decoration: BoxDecoration(
-                color: Color(0xFFA41724),
-                borderRadius:
-                    BorderRadius.circular(10), // Membuat lingkaran penuh
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.3),
-                    spreadRadius: 2,
-                    blurRadius: 10,
-                    offset: Offset(0,
-                        3), // Ubah offset agar shadow berada di bawah bottom nav
-                  ),
-                ],
-              ),
-              child: Icon(
-                Icons.qr_code_scanner_rounded,
-                size: 40,
-                color: Colors.white,
-              ),
-            ),
-          ),
-        ],
       ),
     );
   }
