@@ -1,12 +1,15 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:flutter/material.dart';
+import 'package:ulet_1/pages/user_form/sign_in.dart';
 
 void main() {
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -16,6 +19,8 @@ class MyApp extends StatelessWidget {
 }
 
 class ProfileScreen extends StatefulWidget {
+  const ProfileScreen({super.key});
+
   @override
   _ProfileScreenState createState() => _ProfileScreenState();
 }
@@ -24,6 +29,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       // appBar: AppBar(
       //   title: Text('Profile'),
       //   centerTitle: true,
@@ -60,7 +66,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           image: DecorationImage(
-                            image: AssetImage('gambar_/tester_.jpg'),
+                            image: AssetImage('images/tester_.jpg'),
                             fit: BoxFit.cover,
                           ),
                         ),
@@ -150,11 +156,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   horizontal: 22), // Tambahkan padding kiri dan kanan
               child: ElevatedButton(
                 onPressed: () {
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const SignIn(),
+                    ),
+                    (route) => false,
+                  );
                   // print("Button Log Out Di Tekan!");
                 },
                 style: ElevatedButton.styleFrom(
-                  primary: Color(0xFFA41724),
-                  onPrimary: Colors.white,
+                  foregroundColor: Colors.white,
+                  backgroundColor: Color(0xFFA41724),
                   textStyle: TextStyle(
                     fontSize: 18,
                   ),
