@@ -1,7 +1,7 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
 import 'package:flutter/material.dart';
-import 'package:ulet_1/pages/home_page/bottom_navbar.dart';
+
 import 'package:ulet_1/pages/profile_page/profile_page.dart';
 import 'package:ulet_1/pages/history_page/history_page.dart';
 

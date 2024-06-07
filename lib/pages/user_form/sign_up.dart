@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:country_flags/country_flags.dart';
 import 'package:flutter/services.dart';
+
 import 'package:ulet_1/utils/colors.dart';
 import 'package:ulet_1/utils/font_size.dart';
-
 import 'package:ulet_1/firebase/check_form.dart';
 import 'package:ulet_1/firebase/phone_auth.dart';
 import 'package:ulet_1/pages/user_form/otp_verification.dart';
