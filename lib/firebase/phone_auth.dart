@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:ulet_1/firebase/check_form.dart';
+
 import 'package:ulet_1/security/hashing.dart';
 
 class PhoneAuth {
@@ -71,7 +71,7 @@ class PhoneAuth {
   // sign out current user
   Future<void> signOut() async {
     try {
-      await FirebaseAuth.instance.signOut();
+      await _auth.signOut();
     } catch (e) {
       print('Error signing out: $e');
     }
@@ -80,7 +80,7 @@ class PhoneAuth {
   // check if user is signed out
   Future<bool> isSignedOut() async {
     try {
-      User? user = FirebaseAuth.instance.currentUser;
+      User? user = _auth.currentUser;
       if (user == null) {
         return true;
       }
@@ -88,6 +88,20 @@ class PhoneAuth {
     } catch (e) {
       print('Error signing out: $e');
       return false;
+    }
+  }
+
+  Future<String> getCurrentUserPhoneNumber() async {
+    try {
+      User? user = _auth.currentUser;
+      if (user != null) {
+        print(user.phoneNumber.toString());
+        return user.phoneNumber.toString();
+      }
+      return 'Not Found';
+    } catch (e) {
+      print('Error getting current user phone number: $e');
+      return 'Error';
     }
   }
 }

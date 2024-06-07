@@ -1,17 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:pinput/pinput.dart';
+
 import 'package:ulet_1/firebase/check_form.dart';
-import 'package:ulet_1/pages/home_page/bottom_navbar.dart';
+import 'package:ulet_1/firebase/phone_auth.dart';
 import 'package:ulet_1/utils/colors.dart';
 import 'package:ulet_1/utils/snackbar_alert.dart';
 
 class PINVerification extends StatefulWidget {
-  final String phoneNumber;
-
-  const PINVerification({
-    super.key,
-    required this.phoneNumber,
-  });
+  const PINVerification({super.key});
 
   @override
   State<PINVerification> createState() => _PINVerificationState();
@@ -28,7 +24,7 @@ class _PINVerificationState extends State<PINVerification> {
 
   void _verifyPIN() async {
     bool isPINValid = await CheckForm().isPINValid(
-      widget.phoneNumber,
+      await PhoneAuth().getCurrentUserPhoneNumber(),
       _pinController.text,
     );
     if (mounted) {
