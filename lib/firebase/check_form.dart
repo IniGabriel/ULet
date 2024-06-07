@@ -21,7 +21,7 @@ class CheckForm {
     try {
       QuerySnapshot querySnapshot = await FirebaseFirestore.instance
           .collection('users')
-          .where('phone_number', isEqualTo: '+62$phoneNumber')
+          .where('phone_number', isEqualTo: phoneNumber)
           .get();
       if (querySnapshot.docs.isNotEmpty) {
         String hashedPin = querySnapshot.docs.first.get('pin');
