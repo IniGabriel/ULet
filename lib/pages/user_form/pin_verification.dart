@@ -1,22 +1,49 @@
 import 'package:flutter/material.dart';
 import 'package:pinput/pinput.dart';
+import 'package:ulet_1/firebase/check_form.dart';
 import 'package:ulet_1/pages/home_page/bottom_navbar.dart';
 import 'package:ulet_1/utils/colors.dart';
+import 'package:ulet_1/utils/snackbar_alert.dart';
 
 class PINVerification extends StatefulWidget {
-  const PINVerification({super.key});
+  final String phoneNumber;
+
+  const PINVerification({
+    super.key,
+    required this.phoneNumber,
+  });
 
   @override
   State<PINVerification> createState() => _PINVerificationState();
 }
 
 class _PINVerificationState extends State<PINVerification> {
-  final controller = TextEditingController();
-  final focusNode = FocusNode();
+  final _pinController = TextEditingController();
 
   @override
   void dispose() {
+    _pinController.dispose();
     super.dispose();
+  }
+
+  void _verifyPIN() async {
+    bool isPINValid = await CheckForm().isPINValid(
+      widget.phoneNumber,
+      _pinController.text,
+    );
+    if (mounted) {
+      if (isPINValid) {
+        // TODO: Navigate to anywhere
+        // Navigator.pushReplacement(
+        //   context,
+        //   MaterialPageRoute(
+        //     builder: (context) => const BottomNavbar(),
+        //   ),
+        // );
+      } else {
+        CustomSnackbarAlert().showSnackbarError('Incorrect PIN!', context);
+      }
+    }
   }
 
   @override
@@ -95,30 +122,21 @@ class _PINVerificationState extends State<PINVerification> {
                 const SizedBox(height: 15),
                 Pinput(
                   length: 6,
-                  controller: controller,
-                  focusNode: focusNode,
+                  controller: _pinController,
                   pinAnimationType: PinAnimationType.slide,
                   defaultPinTheme: defaultPinTheme,
                   showCursor: true,
                   cursor: cursor,
                   preFilledWidget: preFilledWidget,
                   closeKeyboardWhenCompleted: true,
-                  autofocus: true,
                   obscureText: true,
+                  onCompleted: (pin) => _verifyPIN(),
                 ),
                 const SizedBox(height: 50),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 20.0),
                   child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.pushAndRemoveUntil(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const BottomNavbar(),
-                        ),
-                        (route) => false,
-                      );
-                    },
+                    onPressed: () {},
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 15),
                       shape: RoundedRectangleBorder(

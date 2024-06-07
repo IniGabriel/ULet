@@ -1,22 +1,9 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:flutter/material.dart';
+import 'package:ulet_1/firebase/phone_auth.dart';
 import 'package:ulet_1/pages/user_form/sign_in.dart';
-
-void main() {
-  runApp(MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: ProfileScreen(),
-    );
-  }
-}
+import 'package:ulet_1/utils/snackbar_alert.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -26,6 +13,23 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  void _signOut() async {
+    await PhoneAuth().signOut();
+    bool isSignedOut = await PhoneAuth().isSignedOut();
+    if (mounted) {
+      if (isSignedOut) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const SignIn(),
+          ),
+        );
+      } else {
+        CustomSnackbarAlert().showSnackbarError('Failed to sign out', context);
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -155,16 +159,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               padding: const EdgeInsets.symmetric(
                   horizontal: 22), // Tambahkan padding kiri dan kanan
               child: ElevatedButton(
-                onPressed: () {
-                  Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const SignIn(),
-                    ),
-                    (route) => false,
-                  );
-                  // print("Button Log Out Di Tekan!");
-                },
+                onPressed: _signOut,
                 style: ElevatedButton.styleFrom(
                   foregroundColor: Colors.white,
                   backgroundColor: Color(0xFFA41724),
@@ -173,7 +168,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                   minimumSize: Size(double.infinity, 50),
                 ),
-                child: Text("Log Out"),
+                child: Text("Sign out"),
               ),
             ),
           ],
