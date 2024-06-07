@@ -4,8 +4,11 @@ import 'package:flutter/services.dart';
 import 'package:ulet_1/utils/colors.dart';
 import 'package:ulet_1/utils/font_size.dart';
 
+import 'package:ulet_1/firebase/check_form.dart';
+import 'package:ulet_1/firebase/phone_auth.dart';
 import 'package:ulet_1/pages/user_form/otp_verification.dart';
 import 'package:ulet_1/pages/user_form/sign_in.dart';
+import 'package:ulet_1/utils/snackbar_alert.dart';
 
 class SignUp extends StatefulWidget {
   const SignUp({super.key});
@@ -15,8 +18,7 @@ class SignUp extends StatefulWidget {
 }
 
 class _SignUpState extends State<SignUp> {
-  final TextEditingController _phoneNumberLengthController =
-      TextEditingController();
+  final TextEditingController _phoneNumberController = TextEditingController();
   final TextEditingController _fullNameController = TextEditingController();
   final TextEditingController _pinController = TextEditingController();
   final TextEditingController _confirmPinController = TextEditingController();
@@ -24,7 +26,7 @@ class _SignUpState extends State<SignUp> {
 
   @override
   void dispose() {
-    _phoneNumberLengthController.dispose();
+    _phoneNumberController.dispose();
     _fullNameController.dispose();
     _pinController.dispose();
     _confirmPinController.dispose();
@@ -33,18 +35,50 @@ class _SignUpState extends State<SignUp> {
 
   void _checkFields() {
     setState(() {
-      _isContinueButtonEnabled =
-          _phoneNumberLengthController.text.length >= 10 &&
-              _fullNameController.text.isNotEmpty &&
-              _pinController.text.length == 6 &&
-              _confirmPinController.text.length == 6;
+      _isContinueButtonEnabled = _phoneNumberController.text.length >= 10 &&
+          _fullNameController.text.isNotEmpty &&
+          _pinController.text.length == 6 &&
+          _confirmPinController.text.length == 6;
+    });
+  }
+
+  void _checkPhoneNumberExistsAndPIN() async {
+    bool isPhoneNumberExists =
+        await CheckForm().isPhoneNumberExists(_phoneNumberController.text);
+    if (mounted) {
+      if (isPhoneNumberExists) {
+        CustomSnackbarAlert()
+            .showSnackbarError('Phone number already registered!', context);
+      } else {
+        if (_pinController.text == _confirmPinController.text) {
+          _sendOTP();
+        } else {
+          CustomSnackbarAlert().showSnackbarError('PINs do not match!', context);
+        }
+      }
+    }
+  }
+
+  void _sendOTP() async {
+    await PhoneAuth().sendOTP(_phoneNumberController.text,
+        (String verificationId) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => OTPVerification(
+            verificationId: verificationId,
+            fullName: _fullNameController.text,
+            phoneNumber: _phoneNumberController.text,
+            pin: _pinController.text,
+          ),
+        ),
+      );
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: false,
       body: SafeArea(
         child: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
@@ -161,8 +195,7 @@ class _SignUpState extends State<SignUp> {
                                         height: 40.0,
                                         child: TextField(
                                           keyboardType: TextInputType.phone,
-                                          controller:
-                                              _phoneNumberLengthController,
+                                          controller: _phoneNumberController,
                                           onChanged: (_) => _checkFields(),
                                           inputFormatters: [
                                             LengthLimitingTextInputFormatter(
@@ -229,7 +262,7 @@ class _SignUpState extends State<SignUp> {
                                 ],
                                 textInputAction: TextInputAction.next,
                                 decoration: const InputDecoration(
-                                  labelText: '6 digits',
+                                  labelText: '******',
                                   floatingLabelBehavior:
                                       FloatingLabelBehavior.never,
                                   focusedBorder: OutlineInputBorder(
@@ -280,7 +313,7 @@ class _SignUpState extends State<SignUp> {
                                 ],
                                 textInputAction: TextInputAction.done,
                                 decoration: const InputDecoration(
-                                  labelText: '6 digits',
+                                  labelText: '******',
                                   floatingLabelBehavior:
                                       FloatingLabelBehavior.never,
                                   focusedBorder: OutlineInputBorder(
@@ -309,15 +342,7 @@ class _SignUpState extends State<SignUp> {
                         padding: const EdgeInsets.symmetric(horizontal: 20.0),
                         child: ElevatedButton(
                           onPressed: _isContinueButtonEnabled
-                              ? () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          const OTPVerification(),
-                                    ),
-                                  );
-                                }
+                              ? _checkPhoneNumberExistsAndPIN
                               : null,
                           style: ElevatedButton.styleFrom(
                             padding: const EdgeInsets.symmetric(vertical: 15),

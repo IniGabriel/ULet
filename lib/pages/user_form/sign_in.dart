@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:country_flags/country_flags.dart';
 import 'package:flutter/services.dart';
+import 'package:ulet_1/firebase/phone_auth.dart';
+import 'package:ulet_1/pages/user_form/otp_verification.dart';
+
 import 'package:ulet_1/utils/colors.dart';
 import 'package:ulet_1/utils/font_size.dart';
-
+import 'package:ulet_1/firebase/check_form.dart';
 import 'package:ulet_1/pages/user_form/sign_up.dart';
 import 'package:ulet_1/pages/user_form/pin_verification.dart';
+import 'package:ulet_1/utils/snackbar_alert.dart';
 
 class SignIn extends StatefulWidget {
   const SignIn({super.key});
@@ -15,20 +19,43 @@ class SignIn extends StatefulWidget {
 }
 
 class _SignInState extends State<SignIn> {
-  final TextEditingController _phoneNumberLengthController =
-      TextEditingController();
+  final TextEditingController _phoneNumberController = TextEditingController();
   bool _isContinueButtonEnabled = false;
 
   @override
   void dispose() {
-    _phoneNumberLengthController.dispose();
+    _phoneNumberController.dispose();
     super.dispose();
   }
 
   void _checkPhoneNumberLength() {
     setState(() {
-      _isContinueButtonEnabled = _phoneNumberLengthController.text.length >= 10;
+      _isContinueButtonEnabled = _phoneNumberController.text.length >= 10;
     });
+  }
+
+  void _verifyPhoneNumber() async {
+    bool isPhoneNumberExists =
+        await CheckForm().isPhoneNumberExists(_phoneNumberController.text);
+    if (mounted) {
+      if (isPhoneNumberExists) {
+        await PhoneAuth().sendOTP(_phoneNumberController.text,
+            (String verificationId) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => OTPVerification(
+                verificationId: verificationId,
+                phoneNumber: _phoneNumberController.text,
+              ),
+            ),
+          );
+        });
+      } else {
+        CustomSnackbarAlert()
+            .showSnackbarError('Phone number is not registered!', context);
+      }
+    }
   }
 
   @override
@@ -47,7 +74,7 @@ class _SignInState extends State<SignIn> {
                     child: Image.asset(
                       'images/ULET.png',
                       width: 200,
-                      height: 200,
+                      height: 180,
                       fit: BoxFit.contain,
                     ),
                   ),
@@ -112,8 +139,7 @@ class _SignInState extends State<SignIn> {
                                         height: 40.0,
                                         child: TextField(
                                           keyboardType: TextInputType.phone,
-                                          controller:
-                                              _phoneNumberLengthController,
+                                          controller: _phoneNumberController,
                                           onChanged: (_) =>
                                               _checkPhoneNumberLength(),
                                           inputFormatters: [
@@ -157,15 +183,7 @@ class _SignInState extends State<SignIn> {
                         padding: const EdgeInsets.symmetric(horizontal: 20.0),
                         child: ElevatedButton(
                           onPressed: _isContinueButtonEnabled
-                              ? () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          const PINVerification(),
-                                    ),
-                                  );
-                                }
+                              ? _verifyPhoneNumber
                               : null,
                           style: ElevatedButton.styleFrom(
                             padding: const EdgeInsets.symmetric(vertical: 15),
