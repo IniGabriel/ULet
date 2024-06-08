@@ -44,20 +44,6 @@ class _TransferPageState extends State<TransferPage> {
     return Scaffold(
       body: Stack(
         children: [
-          // Background image
-          Positioned(
-            top: screenHeight * 0.38,
-            left: screenWidth * 0.25,
-            child: Container(
-              alignment: Alignment.center,
-              child: Image.asset(
-                'images/ULET.png',
-                fit: BoxFit.contain,
-                width: 200,
-                height: 200,
-              ),
-            ),
-          ),
           // Content
           Column(
             children: [
@@ -181,31 +167,6 @@ class _TransferPageState extends State<TransferPage> {
                           ),
                         ],
                       ),
-                    ],
-                  ),
-                ),
-              ),
-              Expanded(
-                child: SingleChildScrollView(
-                  padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 25.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      TextField(
-                        decoration: InputDecoration(
-                          labelText: 'Input Number',
-                          labelStyle: TextStyle(color: Color(0xFFA41724)), // Label text color
-                          enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: Color(0xFFA41724)), // Border color
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: Color(0xFFA41724)), // Border color when focused
-                          ),
-                        ),
-                        keyboardType: TextInputType.number, // Accept only numbers
-                        style: TextStyle(color: Color(0xFFA41724)), // Input text color
-                      ),
-                      // Add additional widgets here if needed
                     ],
                   ),
                 ),
