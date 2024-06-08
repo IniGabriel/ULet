@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import 'package:ulet_1/pages/profile_page/profile_page.dart';
 import 'package:ulet_1/pages/history_page/history_page.dart';
+import 'package:ulet_1/pages/transfer_page/transfer_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -17,7 +18,12 @@ class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0; // Indeks item yang dipilih
 
   void _onItemTapped(int index) {
-    if (index == 3) {
+    if (index == 1) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => TransferPage()),
+      );
+    } else if (index == 3) {
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => HistoryPage()),
@@ -141,7 +147,9 @@ class _HomePageState extends State<HomePage> {
                     children: [
                       GestureDetector(
                         onTap: () {
-                          // Tindakan ketika kotak pertama ditekan
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: (BuildContext context) =>
+                                  TransferPage()));
                         },
                         child: Column(
                           children: [
