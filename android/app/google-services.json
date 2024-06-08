@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "602858478206",
+    "project_id": "ulet-a6713",
+    "storage_bucket": "ulet-a6713.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:602858478206:android:0dc2d466a07996fa6b162f",
+        "android_client_info": {
+          "package_name": "com.example.ulet_1"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyApkWvDqgYFZhb-_w6zDMbFReoaYwkJv4g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

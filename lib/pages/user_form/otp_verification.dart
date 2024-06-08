@@ -2,22 +2,56 @@ import 'package:flutter/material.dart';
 import 'package:pinput/pinput.dart';
 import 'package:ulet_1/utils/colors.dart';
 
-import 'package:ulet_1/pages/home_page/home_page.dart';
+import 'package:ulet_1/firebase/phone_auth.dart';
+import 'package:ulet_1/utils/snackbar_alert.dart';
+import 'package:ulet_1/pages/home_page/bottom_navbar.dart';
 
 class OTPVerification extends StatefulWidget {
-  const OTPVerification({super.key});
+  final String verificationId;
+  final String? fullName;
+  final String phoneNumber;
+  final String? pin;
+
+  const OTPVerification({
+    super.key,
+    required this.verificationId,
+    this.fullName,
+    required this.phoneNumber,
+    this.pin,
+  });
 
   @override
   State<OTPVerification> createState() => _OTPVerificationState();
 }
 
 class _OTPVerificationState extends State<OTPVerification> {
-  final controller = TextEditingController();
-  final focusNode = FocusNode();
+  final TextEditingController _otpController = TextEditingController();
 
   @override
   void dispose() {
+    _otpController.dispose();
     super.dispose();
+  }
+
+  void _verifyOTP() async {
+    bool isOTPVerified = await PhoneAuth().isOTPVerified(
+      verificationId: widget.verificationId,
+      fullName: widget.fullName,
+      pin: widget.pin,
+      otp: _otpController.text,
+    );
+    if (mounted) {
+      if (isOTPVerified) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const BottomNavbar(),
+          ),
+        );
+      } else {
+        CustomSnackbarAlert().showSnackbarError('Incorrect OTP Code!', context);
+      }
+    }
   }
 
   @override
@@ -85,8 +119,16 @@ class _OTPVerificationState extends State<OTPVerification> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
+                Text(
+                  'OTP Code sent to +62${widget.phoneNumber}',
+                  style: const TextStyle(
+                    fontSize: 20,
+                    color: Colors.grey,
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
                 const Text(
-                  'Input the OTP code sent to your number.',
+                  'Enter the OTP code sent to your number.',
                   style: TextStyle(
                     fontSize: 20,
                     color: Colors.grey,
@@ -95,48 +137,17 @@ class _OTPVerificationState extends State<OTPVerification> {
                 ),
                 const SizedBox(height: 15),
                 Pinput(
-                  length: 4,
+                  length: 6,
                   pinAnimationType: PinAnimationType.slide,
-                  controller: controller,
-                  focusNode: focusNode,
+                  controller: _otpController,
                   defaultPinTheme: defaultPinTheme,
                   showCursor: true,
                   cursor: cursor,
                   preFilledWidget: preFilledWidget,
                   closeKeyboardWhenCompleted: true,
-                  autofocus: true,
+                  onCompleted: (pin) => _verifyOTP(),
                 ),
                 const SizedBox(height: 50),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.pushAndRemoveUntil(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const HomePage(),
-                        ),
-                        (route) => false,
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 15),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      minimumSize: const Size(double.infinity, 0),
-                      backgroundColor: CustomColors.primaryColor,
-                    ),
-                    child: const Text(
-                      'Continue',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ),
               ],
             ),
           ),
