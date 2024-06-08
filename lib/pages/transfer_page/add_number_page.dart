@@ -20,12 +20,12 @@ class AddNumberPage extends StatelessWidget {
             Navigator.pop(context);
           },
         ),
-        title: Padding(
-          padding: const EdgeInsets.only(left:0),
-          child: Text(
-            'Add Number',
-          ),
-        ),
+        title: Text(
+  'Add Number',
+  style: TextStyle(
+    color: Colors.white, // Ubah warna teks menjadi putih
+  ),
+),
         centerTitle: true, // Menetapkan judul ke tengah Appbar
         titleSpacing: 0, // Jarak antara judul dengan tombol dan leading widget
       ),
@@ -73,8 +73,8 @@ class AddNumberPage extends StatelessWidget {
                     // Add your logic here
                   },
                   style: ElevatedButton.styleFrom(
-                    primary: Color(0xFFA41724), // Button background color
-                    onPrimary: Colors.white, // Text color
+                    backgroundColor: Color(0xFFA41724), // Button background color
+                    foregroundColor: Colors.white, // Text color
                     padding: EdgeInsets.symmetric(horizontal: 25.0, vertical: 15.0), // Padding tombol
                     shape: RoundedRectangleBorder( // Menghilangkan sudut tombol
                       borderRadius: BorderRadius.circular(10),
