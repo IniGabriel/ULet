@@ -3,6 +3,7 @@ import 'package:ulet_1/pages/home_page/home_page.dart';
 import 'dart:math';
 
 import 'package:ulet_1/pages/profile_page/profile_page.dart';
+import 'package:ulet_1/pages/transfer_page/transfer_page.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -21,13 +22,18 @@ class HistoryPage extends StatefulWidget {
 }
 
 class _HistoryPageState extends State<HistoryPage> {
-  int _selectedIndex = 3; // Index default untuk "History" page
+  int _selectedIndex = 3;
 
   void _onItemTapped(int index) {
     if (index == 0) {
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => HomePage()),
+      );
+    } else if (index == 1) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => TransferPage()),
       );
     } else if (index == 4) {
       Navigator.push(
