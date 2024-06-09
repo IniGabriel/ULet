@@ -85,7 +85,7 @@ class _TransferPageState extends State<TransferPage> {
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
                           Container(
-                            width: screenWidth * 0.36,
+                            width: screenWidth * 0.37,
                             padding: EdgeInsets.symmetric(horizontal: 7.0, vertical: 10.0),
                             decoration: BoxDecoration(
                               color: Colors.white,
@@ -123,7 +123,7 @@ class _TransferPageState extends State<TransferPage> {
                             ),
                           ),
                           Container(
-                            width: screenWidth * 0.36,
+                            width: screenWidth * 0.37,
                             decoration: BoxDecoration(
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(30.0),
