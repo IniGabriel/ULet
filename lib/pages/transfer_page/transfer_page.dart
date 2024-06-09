@@ -1,41 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:ulet_1/pages/home_page/home_page.dart';
-import 'package:ulet_1/pages/profile_page/profile_page.dart';
+
 import 'package:ulet_1/pages/history_page/history_page.dart';
 import 'package:ulet_1/pages/transfer_page/add_number_page.dart';
+import 'package:ulet_1/top_up/top_up.dart';
 
 class TransferPage extends StatefulWidget {
+  const TransferPage({super.key});
+
   @override
-  _TransferPageState createState() => _TransferPageState();
+  State<TransferPage> createState() => _TransferPageState();
 }
 
 class _TransferPageState extends State<TransferPage> {
-  int _selectedIndex = 1;
-
-  void _onItemTapped(int index) {
-    if (index == 0) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => HomePage()),
-      );
-    } else if (index == 3) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => HistoryPage()),
-      );
-    } else if (index == 4) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => ProfileScreen()),
-      );
-    } else {
-      setState(() {
-        _selectedIndex = index;
-      });
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     double screenHeight = MediaQuery.of(context).size.height;
@@ -57,6 +34,7 @@ class _TransferPageState extends State<TransferPage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      SizedBox(height: 12),
                       Text(
                         'UserName',
                         style: TextStyle(
@@ -64,7 +42,6 @@ class _TransferPageState extends State<TransferPage> {
                           fontSize: 16,
                         ),
                       ),
-                      SizedBox(height: 5),
                       Text(
                         'Total Balance',
                         style: TextStyle(
@@ -72,7 +49,6 @@ class _TransferPageState extends State<TransferPage> {
                           fontSize: 34,
                         ),
                       ),
-                      SizedBox(height: 10),
                       Text(
                         'Rp. xxx.xxx.xxx',
                         style: TextStyle(
@@ -80,13 +56,14 @@ class _TransferPageState extends State<TransferPage> {
                           fontSize: 34,
                         ),
                       ),
-                      SizedBox(height: 25),
+                      SizedBox(height: 10),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
                           Container(
                             width: screenWidth * 0.36,
-                            padding: EdgeInsets.symmetric(horizontal: 7.0, vertical: 10.0),
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 7.0, vertical: 10.0),
                             decoration: BoxDecoration(
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(30.0),
@@ -98,7 +75,8 @@ class _TransferPageState extends State<TransferPage> {
                                 onTap: () {
                                   Navigator.push(
                                     context,
-                                    MaterialPageRoute(builder: (context) => AddNumberPage()),
+                                    MaterialPageRoute(
+                                        builder: (context) => AddNumberPage()),
                                   );
                                 },
                                 child: Row(
@@ -135,11 +113,13 @@ class _TransferPageState extends State<TransferPage> {
                                 onTap: () {
                                   Navigator.push(
                                     context,
-                                    MaterialPageRoute(builder: (context) => HistoryPage()),
+                                    MaterialPageRoute(
+                                        builder: (context) => HistoryPage()),
                                   );
                                 },
                                 child: Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 10.0),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 14.0, vertical: 10.0),
                                   child: Row(
                                     children: [
                                       SvgPicture.string(
@@ -166,6 +146,49 @@ class _TransferPageState extends State<TransferPage> {
                             ),
                           ),
                         ],
+                      ),
+                      SizedBox(height: 10),
+                      Container(
+                        width: screenWidth * 0.36,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(30.0),
+                        ),
+                        child: Material(
+                          color: Colors.transparent,
+                          child: InkWell(
+                            borderRadius: BorderRadius.circular(30.0),
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => TopUp()),
+                              );
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 14.0, vertical: 10.0),
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.atm_rounded,
+                                    color: Colors.black,
+                                    size: 35.0,
+                                  ),
+                                  SizedBox(width: 10),
+                                  Text(
+                                    'Top Up',
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
                       ),
                     ],
                   ),
