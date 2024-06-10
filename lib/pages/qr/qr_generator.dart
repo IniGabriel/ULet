@@ -1,11 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+import 'package:ulet_1/firebase/phone_auth.dart';
 class QRGenerator extends StatefulWidget {
   @override
   State<QRGenerator> createState() => _QRGeneratorState();
 }
 
 class _QRGeneratorState extends State<QRGenerator> {
+  String _phoneNumber = "";
+   Future<void> _getPhoneNumber() async {
+    try {
+      print('hello world');
+      String phoneNumber = await PhoneAuth().getCurrentUserPhoneNumber();
+      setState(() {
+        _phoneNumber = phoneNumber;
+      });
+    } catch (e) {
+      print('Error getting phone number: $e');
+    }
+  }
+
+  @override
+  void initState(){
+    super.initState();
+    _getPhoneNumber();
+  }
+
   @override
   Widget build(BuildContext context) {
     const String message = 'Perlihatkan QR';
@@ -35,7 +55,7 @@ class _QRGeneratorState extends State<QRGenerator> {
                     child: QrImageView(
                       errorCorrectionLevel: QrErrorCorrectLevel.H,
                       // NOTE : Change data to proper userData
-                      data: '1234512345',
+                      data: _phoneNumber,
                       version: QrVersions.auto,
                       eyeStyle: const QrEyeStyle(
                         eyeShape: QrEyeShape.square,

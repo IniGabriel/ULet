@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ulet_1/firebase/phone_auth.dart';
+import 'package:ulet_1/pages/qr/qr_generator.dart';
 import 'package:ulet_1/pages/user_form/sign_in.dart';
 import 'package:ulet_1/utils/snackbar_alert.dart';
 
@@ -144,7 +145,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           SizedBox(height: 10),
                           GestureDetector(
                             onTap: () {
-                              print("Berhasil ditekan!");
+                               Navigator.of(context).push(MaterialPageRoute(
+                              builder: (BuildContext context) =>
+                                  QRGenerator()));
                             },
                             child: Container(
                               padding: EdgeInsets.all(10),
