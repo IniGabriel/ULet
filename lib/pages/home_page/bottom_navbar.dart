@@ -3,6 +3,7 @@ import 'package:ulet_1/pages/history_page/history_page.dart';
 import 'package:ulet_1/pages/home_page/home_page.dart';
 import 'package:ulet_1/pages/profile_page/profile_page.dart';
 import 'package:ulet_1/pages/qr/qr_scanner.dart';
+import 'package:ulet_1/pages/transfer_page/transfer_page.dart';
 
 class BottomNavbar extends StatefulWidget {
   const BottomNavbar({super.key});
@@ -13,7 +14,7 @@ class BottomNavbar extends StatefulWidget {
 
 class _BottomNavbarState extends State<BottomNavbar> {
   int _selectedItem = 0;
-  var _pages = [const HomePage(), HistoryPage(), ProfileScreen()];
+  var _pages = [const HomePage(),TransferPage(), HistoryPage(), ProfileScreen()];
   var _pageController = PageController();
 
   @override

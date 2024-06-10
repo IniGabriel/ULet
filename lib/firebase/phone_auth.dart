@@ -104,4 +104,24 @@ class PhoneAuth {
       return 'Error';
     }
   }
+Future<String> getCurrentUserFullName(String phoneNumber) async {
+  try {
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .where('phone_number', isEqualTo: phoneNumber)
+        .get();
+    if (querySnapshot.docs.isNotEmpty) {
+      String userName = querySnapshot.docs.first.get('full_name');
+      print(userName);
+      return userName;
+    } else {
+      print('No user found with the given phone number.');
+      return 'Not Found';
+    }
+  } catch (e) {
+    print('Error getting full name: $e');
+    return 'Error';
+  }
+}
+
 }
