@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 
 import 'package:ulet_1/pages/profile_page/profile_page.dart';
 import 'package:ulet_1/pages/history_page/history_page.dart';
+import 'package:ulet_1/pages/qr/qr_generator.dart';
+import 'package:ulet_1/pages/qr/qr_scanner.dart';
 import 'package:ulet_1/pages/transfer_page/transfer_page.dart';
 
 class HomePage extends StatefulWidget {
@@ -182,7 +184,9 @@ class _HomePageState extends State<HomePage> {
                       ),
                       GestureDetector(
                         onTap: () {
-                          // Tindakan ketika kotak kedua ditekan
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: (BuildContext context) =>
+                                  QRScanner()));
                         },
                         child: Column(
                           children: [
@@ -256,7 +260,9 @@ class _HomePageState extends State<HomePage> {
                       ),
                       GestureDetector(
                         onTap: () {
-                          // Tindakan ketika kotak keempat ditekan
+                           Navigator.of(context).push(MaterialPageRoute(
+                              builder: (BuildContext context) =>
+                                  QRGenerator()));
                         },
                         child: Column(
                           children: [
