@@ -5,7 +5,8 @@ class AddNumberPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: false, // Agar konten tidak naik saat keyboard terbuka
+      resizeToAvoidBottomInset:
+          false, // Agar konten tidak naik saat keyboard terbuka
       appBar: AppBar(
         backgroundColor: Color(0xFFA41724),
         leading: IconButton(
@@ -21,11 +22,11 @@ class AddNumberPage extends StatelessWidget {
           },
         ),
         title: Text(
-  'Add Number',
-  style: TextStyle(
-    color: Colors.white, // Ubah warna teks menjadi putih
-  ),
-),
+          'Add Number',
+          style: TextStyle(
+            color: Colors.white, // Ubah warna teks menjadi putih
+          ),
+        ),
         centerTitle: true, // Menetapkan judul ke tengah Appbar
         titleSpacing: 0, // Jarak antara judul dengan tombol dan leading widget
       ),
@@ -53,17 +54,22 @@ class AddNumberPage extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: Color(0xFFFCEDEE), // Warna background
                       borderRadius: BorderRadius.circular(10), // Radius border
-                      border: Border.all(color: Color(0xFFFFCED2)), // Warna border
+                      border:
+                          Border.all(color: Color(0xFFFFCED2)), // Warna border
                     ),
                     child: TextField(
                       decoration: InputDecoration(
                         labelText: 'Input Number',
-                        labelStyle: TextStyle(color: Color(0xFF000000).withOpacity(0.5), fontSize: 19 * 0.8), // Label text color
+                        labelStyle: TextStyle(
+                            color: Color(0xFF000000).withOpacity(0.5),
+                            fontSize: 19 * 0.8), // Label text color
                         border: InputBorder.none, // Hilangkan border default
-                        contentPadding: EdgeInsets.symmetric(horizontal: 15), // Padding konten
+                        contentPadding: EdgeInsets.symmetric(
+                            horizontal: 15), // Padding konten
                       ),
                       keyboardType: TextInputType.number, // Accept only numbers
-                      style: TextStyle(color: Color(0xFFA41724)), // Input text color
+                      style: TextStyle(
+                          color: Color(0xFFA41724)), // Input text color
                     ),
                   ),
                 ),
@@ -73,10 +79,13 @@ class AddNumberPage extends StatelessWidget {
                     // Add your logic here
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFFA41724), // Button background color
+                    backgroundColor:
+                        Color(0xFFA41724), // Button background color
                     foregroundColor: Colors.white, // Text color
-                    padding: EdgeInsets.symmetric(horizontal: 25.0, vertical: 15.0), // Padding tombol
-                    shape: RoundedRectangleBorder( // Menghilangkan sudut tombol
+                    padding: EdgeInsets.symmetric(
+                        horizontal: 25.0, vertical: 15.0), // Padding tombol
+                    shape: RoundedRectangleBorder(
+                      // Menghilangkan sudut tombol
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
@@ -84,7 +93,6 @@ class AddNumberPage extends StatelessWidget {
                     'Add',
                     style: TextStyle(
                       fontSize: 18,
-                      
                     ),
                   ),
                 ),

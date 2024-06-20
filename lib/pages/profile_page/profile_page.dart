@@ -59,9 +59,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-  Future<void> _getFullName(String phoneNumber) async {
+  Future<void> _getFullName() async {
     try {
-      String fullName = await PhoneAuth().getCurrentUserFullName(phoneNumber);
+      String fullName = await PhoneAuth().getCurrentUserFullName();
       setState(() {
         _fullName = fullName;
         print('full name adalah : $_fullName');
@@ -96,7 +96,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     super.initState();
     _getPhoneNumber().then((_) {
       if (_phoneNumber != null) {
-        _getFullName(_phoneNumber!).then((_) {
+        _getFullName().then((_) {
           if (_fullName != null) {
             _loadImage(_fullName!);
           }
@@ -310,7 +310,7 @@ class OpsiProfile extends StatefulWidget {
   final String fullName;
   final String phoneNumber;
   final Function(String) loadImage;
-  final Function(String) getFullName;
+  final Future<void> Function() getFullName;
   final Function(bool) setLoading;
 
   const OpsiProfile({
@@ -430,7 +430,11 @@ class _OpsiProfileState extends State<OpsiProfile> {
       print('Full name updated successfully');
     });
 
-    widget.getFullName(phoneNumber);
+    await user.updateDisplayName(newUsername);
+    print(user);
+    widget.getFullName();
+
+    widget.getFullName();
     // widget.loadImage(newUsername);
 
     widget.setLoading(false);

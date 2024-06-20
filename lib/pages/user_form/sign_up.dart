@@ -1,3 +1,4 @@
+import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:country_flags/country_flags.dart';
 import 'package:flutter/services.dart';
@@ -20,6 +21,7 @@ class SignUp extends StatefulWidget {
 class _SignUpState extends State<SignUp> {
   final TextEditingController _phoneNumberController = TextEditingController();
   final TextEditingController _fullNameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
   final TextEditingController _pinController = TextEditingController();
   final TextEditingController _confirmPinController = TextEditingController();
   bool _isContinueButtonEnabled = false;
@@ -28,6 +30,7 @@ class _SignUpState extends State<SignUp> {
   void dispose() {
     _phoneNumberController.dispose();
     _fullNameController.dispose();
+    _emailController.dispose();
     _pinController.dispose();
     _confirmPinController.dispose();
     super.dispose();
@@ -38,22 +41,28 @@ class _SignUpState extends State<SignUp> {
       _isContinueButtonEnabled = _phoneNumberController.text.length >= 10 &&
           _fullNameController.text.isNotEmpty &&
           _pinController.text.length == 6 &&
-          _confirmPinController.text.length == 6;
+          _confirmPinController.text.length == 6 &&
+          EmailValidator.validate(_emailController.text);
     });
   }
 
   void _checkPhoneNumberExistsAndPIN() async {
     bool isPhoneNumberExists =
         await CheckForm().isPhoneNumberExists(_phoneNumberController.text);
+    bool isEmailExists = await CheckForm().isEmailExists(_emailController.text);
     if (mounted) {
-      if (isPhoneNumberExists) {
+      if (isEmailExists) {
+        CustomSnackbarAlert()
+            .showSnackbarError('Email already registered!', context);
+      } else if (isPhoneNumberExists) {
         CustomSnackbarAlert()
             .showSnackbarError('Phone number already registered!', context);
       } else {
         if (_pinController.text == _confirmPinController.text) {
           _sendOTP();
         } else {
-          CustomSnackbarAlert().showSnackbarError('PINs do not match!', context);
+          CustomSnackbarAlert()
+              .showSnackbarError('PINs do not match!', context);
         }
       }
     }
@@ -68,6 +77,7 @@ class _SignUpState extends State<SignUp> {
           builder: (context) => OTPVerification(
             verificationId: verificationId,
             fullName: _fullNameController.text,
+            email: _emailController.text,
             phoneNumber: _phoneNumberController.text,
             pin: _pinController.text,
           ),
@@ -132,6 +142,55 @@ class _SignUpState extends State<SignUp> {
                                 ],
                                 decoration: const InputDecoration(
                                   labelText: 'Andika Setiawan',
+                                  floatingLabelBehavior:
+                                      FloatingLabelBehavior.never,
+                                  focusedBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: CustomColors.primaryColor,
+                                    ),
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: CustomColors.primaryColor,
+                                    ),
+                                  ),
+                                  contentPadding:
+                                      EdgeInsets.symmetric(horizontal: 15.0),
+                                ),
+                                style: const TextStyle(
+                                  fontSize: CustomFontSize.primaryFontSize,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(20.0, 20.0, 30.0, 0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'Email Address',
+                              style: TextStyle(
+                                fontSize: CustomFontSize.primaryFontSize,
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 5.0,
+                            ),
+                            SizedBox(
+                              height: 40.0,
+                              child: TextField(
+                                controller: _emailController,
+                                onChanged: (_) => _checkFields(),
+                                textInputAction: TextInputAction.next,
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.allow(
+                                      RegExp(r'[a-zA-Z0-9@._-]+')),
+                                ],
+                                decoration: const InputDecoration(
+                                  labelText: 'andikasetiawan@mail.com',
                                   floatingLabelBehavior:
                                       FloatingLabelBehavior.never,
                                   focusedBorder: OutlineInputBorder(

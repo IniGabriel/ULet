@@ -16,6 +16,19 @@ class CheckForm {
     }
   }
 
+  Future<bool> isEmailExists(String email) async {
+    try {
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .where('email', isEqualTo: email)
+          .get();
+      return querySnapshot.docs.isNotEmpty;
+    } catch (e) {
+      print('Error checking email: $e');
+      return false;
+    }
+  }
+
   // check if entered PIN is valid with the stored hashed PIN
   Future<bool> isPINValid(String phoneNumber, String pin) async {
     try {
