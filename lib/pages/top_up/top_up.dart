@@ -45,7 +45,6 @@ class _TopUpState extends State<TopUp> {
   void _verifyAmount() async {
     FocusScope.of(context).unfocus();
     String walletId = await PhoneAuth().getWalletIDCurrentUser();
-    print(walletId);
     if (walletId == 'Not found') {
       if (mounted) {
         CustomSnackbarAlert()

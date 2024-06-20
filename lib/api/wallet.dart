@@ -73,8 +73,9 @@ class Wallet {
 
       // Extract transId and transDate from the response
       final String transId = data['TransId'];
-      final String transDate = data['TransDate'];
+      final String transDateString = data['TransDate'];
 
+      final DateTime transDate = DateTime.parse(transDateString);
       await History().storeTopUpHistory(transId, transDate, amount);
 
       return 'success';
