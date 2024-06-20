@@ -3,7 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import 'package:ulet_1/pages/history_page/history_page.dart';
 import 'package:ulet_1/pages/transfer_page/add_number_page.dart';
-import 'package:ulet_1/top_up/top_up.dart';
+import 'package:ulet_1/pages/top_up/top_up.dart';
 
 class TransferPage extends StatefulWidget {
   const TransferPage({super.key});
@@ -61,9 +61,8 @@ class _TransferPageState extends State<TransferPage> {
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
                           Container(
-                            width: screenWidth * 0.36,
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 7.0, vertical: 10.0),
+                            width: screenWidth * 0.37,
+                            padding: EdgeInsets.symmetric(horizontal: 7.0, vertical: 10.0),
                             decoration: BoxDecoration(
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(30.0),
@@ -101,7 +100,7 @@ class _TransferPageState extends State<TransferPage> {
                             ),
                           ),
                           Container(
-                            width: screenWidth * 0.36,
+                            width: screenWidth * 0.37,
                             decoration: BoxDecoration(
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(30.0),

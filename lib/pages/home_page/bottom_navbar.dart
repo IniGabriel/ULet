@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:ulet_1/pages/history_page/history_page.dart';
 import 'package:ulet_1/pages/home_page/home_page.dart';
 import 'package:ulet_1/pages/profile_page/profile_page.dart';
+import 'package:ulet_1/pages/qr/qr_scanner.dart';
 import 'package:ulet_1/pages/transfer_page/transfer_page.dart';
 
 class BottomNavbar extends StatefulWidget {
@@ -121,7 +122,7 @@ class _BottomNavbarState extends State<BottomNavbar> {
                 height: 60,
                 decoration: BoxDecoration(
                   color: const Color(
-                      0xFFA41724), // Set your desired background color
+                    0xFFA41724), // Set your desired background color
                   borderRadius:
                       BorderRadius.circular(15), // Partial rounded corners
                   boxShadow: [
@@ -133,11 +134,23 @@ class _BottomNavbarState extends State<BottomNavbar> {
                     ),
                   ],
                 ),
-                child: const Icon(
-                  Icons.qr_code_scanner_rounded,
+                child: IconButton(
+                  icon: const Icon(
+                    Icons.qr_code_scanner_rounded,
+                  ),
+                  iconSize: 30,
                   color: Colors.white,
-                  size: 30,
-                ),
+                  onPressed: () =>{
+                    Navigator.of(context).push(MaterialPageRoute(
+                              builder: (BuildContext context) =>
+                                  QRScanner()))
+                  },
+                )
+                // const Icon(
+                //   Icons.qr_code_scanner_rounded,
+                //   color: Colors.white,
+                //   size: 30,
+                // ),
               ),
             ),
           ),

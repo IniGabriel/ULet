@@ -1,18 +1,20 @@
-// ignore_for_file: prefer_const_constructors
-
 import 'package:flutter/material.dart';
 import 'package:ulet_1/firebase/phone_auth.dart';
+import 'package:ulet_1/pages/qr/qr_generator.dart';
 import 'package:ulet_1/pages/user_form/sign_in.dart';
 import 'package:ulet_1/utils/snackbar_alert.dart';
 
 class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({super.key});
+  const ProfileScreen({Key? key}) : super(key: key);
 
   @override
   _ProfileScreenState createState() => _ProfileScreenState();
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  String? _phoneNumber;
+  String? _fullName;
+
   void _signOut() async {
     await PhoneAuth().signOut();
     bool isSignedOut = await PhoneAuth().isSignedOut();
@@ -30,23 +32,49 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
+  Future<void> _getPhoneNumber() async {
+    try {
+      String phoneNumber = await PhoneAuth().getCurrentUserPhoneNumber();
+      setState(() {
+        _phoneNumber = phoneNumber;
+      });
+    } catch (e) {
+      print('Error getting phone number: $e');
+    }
+  }
+
+  Future<void> _getFullName() async {
+    try {
+      String fullName = await PhoneAuth().getCurrentUserFullName();
+      setState(() {
+        _fullName = fullName;
+      });
+    } catch (e) {
+      print('Error getting full name: $e');
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _getPhoneNumber().then((_) {
+      if (_phoneNumber != null) {
+        _getFullName();
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      // appBar: AppBar(
-      //   title: Text('Profile'),
-      //   centerTitle: true,
-      //   backgroundColor: Colors.red[600],
-      // ),
       body: Padding(
         padding: const EdgeInsets.all(0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Container for the profile picture
             Container(
-              color: Color(0xFFA41724), // Latar belakang merah
+              color: Color(0xFFA41724),
               width: double.infinity,
               padding:
                   EdgeInsets.only(left: 22, right: 22, top: 15, bottom: 56),
@@ -75,31 +103,51 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ),
                         ),
                       ),
-                      SizedBox(width: 20), // Spacer between image and text
-                      // Column for the name and number
+                      SizedBox(width: 20),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            'Username',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
+                          if (_fullName != null)
+                            Text(
+                              _fullName!,
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            )
+                          else
+                            Text(
+                              'Loading...',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
                             ),
-                          ),
                           SizedBox(height: 10),
-                          Text(
-                            '0821 1234 5678',
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.grey[300],
+                          if (_phoneNumber != null)
+                            Text(
+                              _phoneNumber!,
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.grey[300],
+                              ),
+                            )
+                          else
+                            Text(
+                              'Loading...',
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.grey[300],
+                              ),
                             ),
-                          ),
                           SizedBox(height: 10),
                           GestureDetector(
                             onTap: () {
-                              print("Berhasil ditekan!");
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (BuildContext context) =>
+                                      QRGenerator()));
                             },
                             child: Container(
                               padding: EdgeInsets.all(10),
@@ -136,28 +184,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ],
               ),
             ),
-            SizedBox(height: 40), // Spacer between image and text
-            // Text "Halo"
+            SizedBox(height: 40),
             OpsiProfile(
-              icon: Icons.lock_reset, // Ikon untuk opsi pertama
-              text: "Change Password", // Teks untuk opsi pertama
+              icon: Icons.lock_reset,
+              text: "Change Password",
             ),
             OpsiProfile(
-              icon: Icons.account_circle, // Ikon untuk opsi kedua
-              text: "Profile", // Teks untuk opsi kedua
+              icon: Icons.account_circle,
+              text: "Profile",
             ),
             OpsiProfile(
-              icon: Icons.phone_android, // Ikon untuk opsi ketiga
-              text: "Mobile", // Teks untuk opsi ketiga
+              icon: Icons.phone_android,
+              text: "Mobile",
             ),
             OpsiProfile(
-              icon: Icons.home, // Ikon untuk opsi keempat
-              text: "Home", // Teks untuk opsi keempat
+              icon: Icons.home,
+              text: "Home",
             ),
             SizedBox(height: 50),
             Padding(
-              padding: const EdgeInsets.symmetric(
-                  horizontal: 22), // Tambahkan padding kiri dan kanan
+              padding: const EdgeInsets.symmetric(horizontal: 22),
               child: ElevatedButton(
                 onPressed: _signOut,
                 style: ElevatedButton.styleFrom(
@@ -190,7 +236,6 @@ class OpsiProfile extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         print("$text Di Tekan!");
-        // Lakukan tindakan sesuai dengan opsi yang dipilih
       },
       child: ListTile(
         leading: Container(
