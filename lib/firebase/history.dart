@@ -7,10 +7,11 @@ class History {
 
   // store top up to history
   Future<void> storeTopUpHistory(
-      String transId, String transDate, int amount) async {
+      String transId, DateTime transDate, int amount) async {
     try {
       User? user = _auth.currentUser;
       String userID = user!.uid;
+      Timestamp timestamp = Timestamp.fromDate(transDate);
       await _firestore
           .collection('users')
           .doc(userID)
@@ -18,7 +19,7 @@ class History {
           .doc(transId)
           .set({
         'transaction_type': 'top_up',
-        'transaction_date': transDate,
+        'transaction_date': timestamp,
         'user_id': '',
         'description': 'Top up from PAY.TUNGKUAPI',
         'amount': amount,
