@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:ulet_1/firebase/firebase_options.dart';
 import 'package:ulet_1/pages/user_form/sign_in.dart';
 import 'package:ulet_1/pages/home_page/bottom_navbar.dart';
@@ -10,6 +11,7 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  await dotenv.load(fileName: ".env");
   runApp(const MyApp());
 }
 

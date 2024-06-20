@@ -43,9 +43,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-  Future<void> _getFullName(String phoneNumber) async {
+  Future<void> _getFullName() async {
     try {
-      String fullName = await PhoneAuth().getCurrentUserFullName(phoneNumber);
+      String fullName = await PhoneAuth().getCurrentUserFullName();
       setState(() {
         _fullName = fullName;
       });
@@ -59,7 +59,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     super.initState();
     _getPhoneNumber().then((_) {
       if (_phoneNumber != null) {
-        _getFullName(_phoneNumber!);
+        _getFullName();
       }
     });
   }
@@ -145,9 +145,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           SizedBox(height: 10),
                           GestureDetector(
                             onTap: () {
-                               Navigator.of(context).push(MaterialPageRoute(
-                              builder: (BuildContext context) =>
-                                  QRGenerator()));
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (BuildContext context) =>
+                                      QRGenerator()));
                             },
                             child: Container(
                               padding: EdgeInsets.all(10),
