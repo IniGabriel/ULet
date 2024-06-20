@@ -103,7 +103,7 @@ class PhoneAuth {
     try {
       User? user = _auth.currentUser;
       if (user != null) {
-        print(user.phoneNumber.toString());
+        // print(user.phoneNumber.toString());
         return user.phoneNumber.toString();
       }
       return 'Not Found';
@@ -119,9 +119,12 @@ class PhoneAuth {
       User? user = _auth.currentUser;
       if (user != null) {
         print(user.displayName.toString());
+        print(user);
+        print('bisa gg gaming ez');
         return user.displayName.toString();
       }
       return 'Not Found';
+      print('anehhhhhhhhhhhhhhhhhhhhhhhh');
     } catch (e) {
       print('Error getting current user dislay name: $e');
       return 'Error';
