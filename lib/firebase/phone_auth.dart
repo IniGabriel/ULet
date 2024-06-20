@@ -98,6 +98,7 @@ class PhoneAuth {
     }
   }
 
+  // get current user's phone number
   Future<String> getCurrentUserPhoneNumber() async {
     try {
       User? user = _auth.currentUser;
@@ -112,6 +113,7 @@ class PhoneAuth {
     }
   }
 
+  // get current user's full name
   Future<String> getCurrentUserFullName() async {
     try {
       User? user = _auth.currentUser;
@@ -124,5 +126,31 @@ class PhoneAuth {
       print('Error getting current user dislay name: $e');
       return 'Error';
     }
+  }
+
+  // get current user's walletID
+  Future<String> getWalletIDCurrentUser() async {
+    final User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      final String? phoneNumber = user.phoneNumber;
+      if (phoneNumber != null) {
+        final QuerySnapshot<Map<String, dynamic>> querySnapshot =
+            await FirebaseFirestore.instance
+                .collection('users')
+                .where('phone_number', isEqualTo: phoneNumber)
+                .limit(1)
+                .get();
+
+        final List<QueryDocumentSnapshot<Map<String, dynamic>>> docs =
+            querySnapshot.docs;
+        if (docs.isNotEmpty) {
+          final Map<String, dynamic>? userData = docs.first.data();
+          if (userData != null) {
+            return userData['wallet_id'] as String;
+          }
+        }
+      }
+    }
+    return 'Not Found';
   }
 }
