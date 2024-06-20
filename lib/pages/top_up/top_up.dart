@@ -34,6 +34,13 @@ class _TopUpState extends State<TopUp> {
     });
   }
 
+  void _clearFields() {
+    setState(() {
+      _amountController.clear();
+      _isContinueButtonEnabled = false;
+    });
+  }
+
   // verify amount of top up
   void _verifyAmount() async {
     FocusScope.of(context).unfocus();
@@ -50,12 +57,10 @@ class _TopUpState extends State<TopUp> {
         .postTopUpBalance(int.parse(_amountController.text), walletId);
     if (mounted) {
       if (result == 'success') {
-        _amountController.clear();
-        _isContinueButtonEnabled = false;
+        _clearFields();
         CustomSnackbarAlert().showSnackbarSuccess('Top up successful', context);
       } else {
-        _amountController.clear();
-        _isContinueButtonEnabled = false;
+        _clearFields();
         CustomSnackbarAlert()
             .showSnackbarError('Something went wrong', context);
       }
