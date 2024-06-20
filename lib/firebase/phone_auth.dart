@@ -95,7 +95,7 @@ class PhoneAuth {
     try {
       User? user = _auth.currentUser;
       if (user != null) {
-        print(user.phoneNumber.toString());
+        // print(user.phoneNumber.toString());
         return user.phoneNumber.toString();
       }
       return 'Not Found';
@@ -112,7 +112,7 @@ Future<String> getCurrentUserFullName(String phoneNumber) async {
         .get();
     if (querySnapshot.docs.isNotEmpty) {
       String userName = querySnapshot.docs.first.get('full_name');
-      print(userName);
+      // print(userName);
       return userName;
     } else {
       print('No user found with the given phone number.');
