@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:ulet_1/api/wallet.dart';
@@ -120,7 +122,6 @@ class PhoneAuth {
       if (user != null) {
         print(user.displayName.toString());
         print(user);
-        print('bisa gg gaming ez');
         return user.displayName.toString();
       }
       return 'Not Found';
@@ -156,4 +157,31 @@ class PhoneAuth {
     }
     return 'Not Found';
   }
+
+Future<double> getWalletBalanceCurrentUser() async {
+  final User? user = FirebaseAuth.instance.currentUser;
+  if (user != null) {
+    final String? phoneNumber = user.phoneNumber;
+    if (phoneNumber != null) {
+      final QuerySnapshot<Map<String, dynamic>> querySnapshot =
+          await FirebaseFirestore.instance
+              .collection('users')
+              .where('phone_number', isEqualTo: phoneNumber)
+              .limit(1)
+              .get();
+
+      final List<QueryDocumentSnapshot<Map<String, dynamic>>> docs =
+          querySnapshot.docs;
+      if (docs.isNotEmpty) {
+        final Map<String, dynamic>? userData = docs.first.data();
+        if (userData != null) {
+          double balance = await Wallet().getWalletBalance(userData['email']);
+          return balance;
+        }
+      }
+    }
+  }
+  return 0.0;
+}
+
 }

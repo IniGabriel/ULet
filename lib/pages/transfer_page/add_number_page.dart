@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:ulet_1/firebase/firebase_service.dart';
 
+
 class AddNumberPage extends StatefulWidget {
   @override
   _AddNumberPageState createState() => _AddNumberPageState();
@@ -35,6 +36,8 @@ class _AddNumberPageState extends State<AddNumberPage> {
     }
     return phoneNumber;
   }
+
+  
 
   @override
   Widget build(BuildContext context) {
@@ -81,20 +84,20 @@ class _AddNumberPageState extends State<AddNumberPage> {
                 Expanded(
                   child: Container(
                     decoration: BoxDecoration(
-                      color: Color(0xFFFCEDEE),
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: Color(0xFFFFCED2)),
+                      color: Color(0xFFFCEDEE), // Warna background
+                      borderRadius: BorderRadius.circular(10), // Radius border
+                      border: Border.all(color: Color(0xFFFFCED2)), // Warna border
                     ),
                     child: TextField(
                       controller: _phoneNumberController,
                       decoration: InputDecoration(
                         labelText: 'Input Number',
-                        labelStyle: TextStyle(color: Color(0xFF000000).withOpacity(0.5), fontSize: 19 * 0.8),
-                        border: InputBorder.none,
-                        contentPadding: EdgeInsets.symmetric(horizontal: 15),
+                        labelStyle: TextStyle(color: Color(0xFF000000).withOpacity(0.5), fontSize: 19 * 0.8), // Label text color
+                        border: InputBorder.none, // Hilangkan border default
+                        contentPadding: EdgeInsets.symmetric(horizontal: 15), // Padding konten
                       ),
-                      keyboardType: TextInputType.number,
-                      style: TextStyle(color: Color(0xFFA41724)),
+                      keyboardType: TextInputType.number, // Accept only numbers
+                      style: TextStyle(color: Color(0xFFA41724)), // Input text color
                     ),
                   ),
                 ),
@@ -102,10 +105,10 @@ class _AddNumberPageState extends State<AddNumberPage> {
                 ElevatedButton(
                   onPressed: _addPhoneNumber,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFFA41724),
-                    foregroundColor: Colors.white,
-                    padding: EdgeInsets.symmetric(horizontal: 25.0, vertical: 15.0),
-                    shape: RoundedRectangleBorder(
+                    backgroundColor: Color(0xFFA41724), // Button background color
+                    foregroundColor: Colors.white, // Text color
+                    padding: EdgeInsets.symmetric(horizontal: 25.0, vertical: 15.0), // Padding tombol
+                    shape: RoundedRectangleBorder( // Menghilangkan sudut tombol
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),

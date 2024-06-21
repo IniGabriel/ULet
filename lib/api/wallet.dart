@@ -116,4 +116,39 @@ class Wallet {
       return 'null';
     }
   }
+
+  // Get Wallet Balance
+Future<double> getWalletBalance(String email) async {
+  final Uri url = Uri.parse(baseURL).replace(
+    path: 'PAY-API/API/FindWallet',
+    queryParameters: {'email': email},
+  );
+
+  final Map<String, String> headers = {
+    'Authorization': authorizationToken,
+    'X-AppId': appID,
+    'X-AppKey': appKey,
+  };
+
+  final response = await http.get(
+    url,
+    headers: headers,
+  );
+
+  if (response.statusCode == 200) {
+    // Parse JSON response to Dart object
+    final Map<String, dynamic> data = json.decode(response.body);
+
+    // Extract WalletId from the response
+    final double walletBalance = (data['Balance'] as num).toDouble();
+    print('Response data: ${response.body}');
+    return walletBalance;
+  } else {
+    print('Failed to make request. Status code: ${response.statusCode}');
+    return 0.0;
+  }
 }
+
+}
+
+
