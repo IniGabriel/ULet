@@ -91,6 +91,17 @@ class PhoneAuth {
     }
   }
 
+  Future<void> updatePhoneNumber(String uid, String newPhoneNumber) async {
+    try {
+      await _firestore.collection('users').doc(uid).update({
+        'phone_number': newPhoneNumber,
+      });
+      print('Phone number updated successfully.');
+    } catch (e) {
+      print('Error updating phone number: $e');
+    }
+  }
+
   Future<String> getCurrentUserPhoneNumber() async {
     try {
       User? user = _auth.currentUser;
@@ -104,24 +115,24 @@ class PhoneAuth {
       return 'Error';
     }
   }
-Future<String> getCurrentUserFullName(String phoneNumber) async {
-  try {
-    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-        .collection('users')
-        .where('phone_number', isEqualTo: phoneNumber)
-        .get();
-    if (querySnapshot.docs.isNotEmpty) {
-      String userName = querySnapshot.docs.first.get('full_name');
-      print(userName);
-      return userName;
-    } else {
-      print('No user found with the given phone number.');
-      return 'Not Found';
-    }
-  } catch (e) {
-    print('Error getting full name: $e');
-    return 'Error';
-  }
-}
 
+  Future<String> getCurrentUserFullName(String phoneNumber) async {
+    try {
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .where('phone_number', isEqualTo: phoneNumber)
+          .get();
+      if (querySnapshot.docs.isNotEmpty) {
+        String userName = querySnapshot.docs.first.get('full_name');
+        print(userName);
+        return userName;
+      } else {
+        print('No user found with the given phone number.');
+        return 'Not Found';
+      }
+    } catch (e) {
+      print('Error getting full name: $e');
+      return 'Error';
+    }
+  }
 }

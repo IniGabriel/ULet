@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ulet_1/firebase/phone_auth.dart';
+import 'package:ulet_1/pages/changenumber_page/change_phone_number.dart';
 import 'package:ulet_1/pages/qr/qr_generator.dart';
 import 'package:ulet_1/pages/user_form/sign_in.dart';
 import 'package:ulet_1/utils/snackbar_alert.dart';
@@ -74,28 +75,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
-              color: Color(0xFFA41724),
+              color: const Color(0xFFA41724),
               width: double.infinity,
-              padding:
-                  EdgeInsets.only(left: 22, right: 22, top: 15, bottom: 56),
+              padding: const EdgeInsets.only(
+                  left: 22, right: 22, top: 15, bottom: 56),
               child: Column(
                 children: [
-                  Text(
+                  const Text(
                     "Profile",
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 26,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
                     ),
                   ),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Container(
                         width: 100,
                         height: 100,
-                        decoration: BoxDecoration(
+                        decoration: const BoxDecoration(
                           shape: BoxShape.circle,
                           image: DecorationImage(
                             image: AssetImage('images/tester_.jpg'),
@@ -103,21 +104,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ),
                         ),
                       ),
-                      SizedBox(width: 20),
+                      const SizedBox(width: 20),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           if (_fullName != null)
                             Text(
                               _fullName!,
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.white,
                               ),
                             )
                           else
-                            Text(
+                            const Text(
                               'Loading...',
                               style: TextStyle(
                                 fontSize: 18,
@@ -125,7 +126,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 color: Colors.white,
                               ),
                             ),
-                          SizedBox(height: 10),
+                          const SizedBox(height: 10),
                           if (_phoneNumber != null)
                             Text(
                               _phoneNumber!,
@@ -142,15 +143,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 color: Colors.grey[300],
                               ),
                             ),
-                          SizedBox(height: 10),
+                          const SizedBox(height: 10),
                           GestureDetector(
                             onTap: () {
-                               Navigator.of(context).push(MaterialPageRoute(
-                              builder: (BuildContext context) =>
-                                  QRGenerator()));
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (BuildContext context) =>
+                                      QRGenerator()));
                             },
                             child: Container(
-                              padding: EdgeInsets.all(10),
+                              padding: const EdgeInsets.all(10),
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(30),
                                 border: Border.all(
@@ -165,7 +166,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     color: Colors.grey[300],
                                     size: 16,
                                   ),
-                                  SizedBox(width: 5),
+                                  const SizedBox(width: 5),
                                   Text(
                                     'Show QR Code',
                                     style: TextStyle(
@@ -184,37 +185,42 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ],
               ),
             ),
-            SizedBox(height: 40),
-            OpsiProfile(
+            const SizedBox(height: 40),
+            const OpsiProfile(
               icon: Icons.lock_reset,
               text: "Change Password",
             ),
-            OpsiProfile(
+            const OpsiProfile(
               icon: Icons.account_circle,
               text: "Profile",
             ),
             OpsiProfile(
               icon: Icons.phone_android,
-              text: "Mobile",
+              text: "Change Phone Number",
+              onTap: () {
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (BuildContext context) =>
+                        ChangePhoneNumberPage()));
+              },
             ),
-            OpsiProfile(
-              icon: Icons.home,
-              text: "Home",
+            const OpsiProfile(
+              icon: Icons.lock_reset,
+              text: "Change Pin",
             ),
-            SizedBox(height: 50),
+            const SizedBox(height: 50),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 22),
               child: ElevatedButton(
                 onPressed: _signOut,
                 style: ElevatedButton.styleFrom(
                   foregroundColor: Colors.white,
-                  backgroundColor: Color(0xFFA41724),
-                  textStyle: TextStyle(
+                  backgroundColor: const Color(0xFFA41724),
+                  textStyle: const TextStyle(
                     fontSize: 18,
                   ),
-                  minimumSize: Size(double.infinity, 50),
+                  minimumSize: const Size(double.infinity, 50),
                 ),
-                child: Text("Sign out"),
+                child: const Text("Sign out"),
               ),
             ),
           ],
@@ -227,16 +233,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
 class OpsiProfile extends StatelessWidget {
   final IconData icon;
   final String text;
+  final VoidCallback?
+      onTap; // Tambahkan tanda tanya (?) untuk membuatnya opsional
 
-  const OpsiProfile({Key? key, required this.icon, required this.text})
-      : super(key: key);
+  const OpsiProfile({
+    Key? key,
+    required this.icon,
+    required this.text,
+    this.onTap, // Tandai sebagai opsional dengan menggunakan tanda tanya
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        print("$text Di Tekan!");
-      },
+      onTap:
+          onTap, // Gunakan onTap sesuai dengan nilai yang diberikan atau null jika tidak ada
       child: ListTile(
         leading: Container(
           width: 40,
@@ -248,8 +259,41 @@ class OpsiProfile extends StatelessWidget {
           child: Icon(icon),
         ),
         title: Text(text),
-        trailing: Icon(Icons.arrow_forward_ios),
+        trailing: const Icon(Icons.arrow_forward_ios),
       ),
     );
   }
 }
+
+
+
+// class OpsiProfile extends StatelessWidget {
+//   final IconData icon;
+//   final String text;
+
+//   const OpsiProfile({Key? key, required this.icon, required this.text})
+//       : super(key: key);
+// @override
+//   Widget build(BuildContext context) {
+//     return GestureDetector(
+//       onTap: () {
+//         print("$text Di Tekan!");
+//       },
+//       child: ListTile(
+//         leading: Container(
+//           width: 40,
+//           height: 40,
+//           decoration: BoxDecoration(
+//             borderRadius: BorderRadius.circular(100),
+//             color: Colors.grey.withOpacity(0.1),
+//           ),
+//           child: Icon(icon),
+//         ),
+//         title: Text(text),
+//         trailing: const Icon(Icons.arrow_forward_ios),
+//       ),
+//     );
+//   }
+// }
+
+  

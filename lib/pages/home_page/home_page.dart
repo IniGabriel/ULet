@@ -1,7 +1,7 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
 import 'package:flutter/material.dart';
-
+import 'package:ulet_1/firebase/phone_auth.dart';
 import 'package:ulet_1/pages/profile_page/profile_page.dart';
 import 'package:ulet_1/pages/history_page/history_page.dart';
 import 'package:ulet_1/pages/qr/qr_generator.dart';
@@ -16,6 +16,40 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  String? _phoneNumber;
+  String? _fullName;
+  Future<void> _getPhoneNumber() async {
+    try {
+      String phoneNumber = await PhoneAuth().getCurrentUserPhoneNumber();
+      setState(() {
+        _phoneNumber = phoneNumber;
+      });
+    } catch (e) {
+      print('Error getting phone number: $e');
+    }
+  }
+
+  Future<void> _getFullName(String phoneNumber) async {
+    try {
+      String fullName = await PhoneAuth().getCurrentUserFullName(phoneNumber);
+      setState(() {
+        _fullName = fullName;
+      });
+    } catch (e) {
+      print('Error getting full name: $e');
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _getPhoneNumber().then((_) {
+      if (_phoneNumber != null) {
+        _getFullName(_phoneNumber!);
+      }
+    });
+  }
+
   bool isHidden = false; // Variabel untuk melacak status visibilitas
   int _selectedIndex = 0; // Indeks item yang dipilih
 
@@ -64,7 +98,7 @@ class _HomePageState extends State<HomePage> {
                 Padding(
                   padding: EdgeInsets.symmetric(vertical: 3, horizontal: 20),
                   child: Text(
-                    "Hello, Username",
+                    "Hello, $_fullName",
                     style: TextStyle(
                       fontSize: 16.0,
                       fontWeight: FontWeight.bold,
@@ -128,7 +162,7 @@ class _HomePageState extends State<HomePage> {
                     child: Padding(
                       padding: const EdgeInsets.only(left: 20),
                       child: Text(
-                        "Username", // Ganti dengan nominal saldo yang sesuai
+                        "$_fullName", // Ganti dengan nominal saldo yang sesuai
                         style: TextStyle(
                           fontSize: 15.0,
                           fontWeight: FontWeight.w500,
@@ -185,8 +219,7 @@ class _HomePageState extends State<HomePage> {
                       GestureDetector(
                         onTap: () {
                           Navigator.of(context).push(MaterialPageRoute(
-                              builder: (BuildContext context) =>
-                                  QRScanner()));
+                              builder: (BuildContext context) => QRScanner()));
                         },
                         child: Column(
                           children: [
@@ -260,7 +293,7 @@ class _HomePageState extends State<HomePage> {
                       ),
                       GestureDetector(
                         onTap: () {
-                           Navigator.of(context).push(MaterialPageRoute(
+                          Navigator.of(context).push(MaterialPageRoute(
                               builder: (BuildContext context) =>
                                   QRGenerator()));
                         },
