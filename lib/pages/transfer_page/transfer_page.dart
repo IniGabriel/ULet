@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:ulet_1/pages/home_page/home_page.dart';
-import 'package:ulet_1/pages/profile_page/profile_page.dart';
+
 import 'package:ulet_1/pages/history_page/history_page.dart';
 import 'package:ulet_1/pages/transfer_page/add_number_page.dart';
 import 'package:ulet_1/firebase/firebase_service.dart';
 import 'package:ulet_1/firebase/phone_auth.dart';
+import 'package:ulet_1/pages/top_up/top_up.dart';
 
 class TransferPage extends StatefulWidget {
+  const TransferPage({super.key});
+
   @override
-  _TransferPageState createState() => _TransferPageState();
+  State<TransferPage> createState() => _TransferPageState();
 }
 
 class _TransferPageState extends State<TransferPage> {
@@ -34,7 +36,7 @@ class _TransferPageState extends State<TransferPage> {
 
   Future<void> _getFullName(String phoneNumber) async {
     try {
-      String fullName = await PhoneAuth().getCurrentUserFullName(phoneNumber);
+      String fullName = await PhoneAuth().getCurrentUserFullName();
       setState(() {
         _fullName = fullName;
       });
@@ -236,7 +238,50 @@ Future<void> _deletePhoneNumber(String phoneNumber) async {
                             ),
                           ),
                         ),
-                      ],
+                        SizedBox(height: 10),
+                      Container(
+                        width: screenWidth * 0.36,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(30.0),
+                        ),
+                        child: Material(
+                          color: Colors.transparent,
+                          child: InkWell(
+                            borderRadius: BorderRadius.circular(30.0),
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => TopUp()),
+                              );
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 14.0, vertical: 10.0),
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.atm_rounded,
+                                    color: Colors.black,
+                                    size: 35.0,
+                                  ),
+                                  SizedBox(width: 10),
+                                  Text(
+                                    'Top Up',
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                     ),
                   ),
                 ],

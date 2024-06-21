@@ -3,7 +3,7 @@ import 'package:ulet_1/utils/colors.dart';
 import 'package:ulet_1/utils/font_size.dart';
 
 class CustomSnackbarAlert {
-  void showSnackbarWarning(String message, BuildContext context) {
+  void showSnackbarSuccess(String message, BuildContext context) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: Text(
         message,
@@ -11,7 +11,7 @@ class CustomSnackbarAlert {
           fontSize: CustomFontSize.primaryFontSize,
         ),
       ),
-      backgroundColor: CustomColors.warningColor,
+      backgroundColor: CustomColors.validColor,
       duration: const Duration(milliseconds: 1300),
     ));
   }

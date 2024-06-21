@@ -9,6 +9,7 @@ import 'package:ulet_1/pages/home_page/bottom_navbar.dart';
 class OTPVerification extends StatefulWidget {
   final String verificationId;
   final String? fullName;
+  final String? email;
   final String phoneNumber;
   final String? pin;
 
@@ -16,6 +17,7 @@ class OTPVerification extends StatefulWidget {
     super.key,
     required this.verificationId,
     this.fullName,
+    this.email,
     required this.phoneNumber,
     this.pin,
   });
@@ -37,6 +39,7 @@ class _OTPVerificationState extends State<OTPVerification> {
     bool isOTPVerified = await PhoneAuth().isOTPVerified(
       verificationId: widget.verificationId,
       fullName: widget.fullName,
+      email: widget.email,
       pin: widget.pin,
       otp: _otpController.text,
     );
