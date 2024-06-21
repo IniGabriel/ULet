@@ -121,53 +121,55 @@ class _QRScannerState extends State<QRScanner> with WidgetsBindingObserver {
                               topRight: Radius.circular(25)),
                         ),
                         width: double.infinity,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Container(
-                              margin: const EdgeInsets.only(
-                                  top: 20, right: 15, left: 15, bottom: 20),
-                              width: double.infinity,
-                              height: 50,
-                              decoration: BoxDecoration(
-                                  gradient: const LinearGradient(
-                                      colors: [
-                                        Colors.white,
-                                        Colors.red,
-                                        Colors.white
-                                      ],
-                                      begin: Alignment.topCenter,
-                                      end: Alignment.bottomCenter),
-                                  borderRadius: const BorderRadius.all(
-                                      Radius.circular(25)),
-                                  border: Border.all(
-                                      color: const Color(0xFFA41724), width: 1.5)),
-                              // Scanned Data Here
-                              child: Expanded(
-                                child: Center(
-                                  child: _buildBarcode(_barcode),
+                        child: SafeArea(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Container(
+                                margin: const EdgeInsets.only(
+                                    top: 20, right: 15, left: 15, bottom: 20),
+                                width: double.infinity,
+                                height: 50,
+                                decoration: BoxDecoration(
+                                    gradient: const LinearGradient(
+                                        colors: [
+                                          Colors.white,
+                                          Colors.red,
+                                          Colors.white
+                                        ],
+                                        begin: Alignment.topCenter,
+                                        end: Alignment.bottomCenter),
+                                    borderRadius: const BorderRadius.all(
+                                        Radius.circular(25)),
+                                    border: Border.all(
+                                        color: const Color(0xFFA41724), width: 1.5)),
+                                // Scanned Data Here
+                                child: Expanded(
+                                  child: Center(
+                                    child: _buildBarcode(_barcode),
+                                  ),
                                 ),
                               ),
-                            ),
-                            Row(
-                              mainAxisAlignment:
-                                  MainAxisAlignment.spaceAround,
-                              children: [
-                                Expanded(
-                                    flex: 2,
-                                    child: Container(
-                                        color: const Color(0xFFA41724),
-                                        child: ToggleFlashlightButton(
-                                            controller: controller))),
-                                // Expanded(
-                                //     flex: 2,
-                                //     child: Container(
-                                //         color: Colors.lightGreenAccent,
-                                //         child: AnalyzeImageFromGalleryButton(
-                                //             controller: controller))),
-                              ],
-                            )
-                          ],
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceAround,
+                                children: [
+                                  Expanded(
+                                      flex: 2,
+                                      child: Container(
+                                          color: const Color(0xFFA41724),
+                                          child: ToggleFlashlightButton(
+                                              controller: controller))),
+                                  // Expanded(
+                                  //     flex: 2,
+                                  //     child: Container(
+                                  //         color: Colors.lightGreenAccent,
+                                  //         child: AnalyzeImageFromGalleryButton(
+                                  //             controller: controller))),
+                                ],
+                              )
+                            ],
+                          ),
                         ),
                       ))
                 ],

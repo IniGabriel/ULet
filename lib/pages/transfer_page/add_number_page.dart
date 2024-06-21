@@ -1,12 +1,45 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:ulet_1/firebase/firebase_service.dart';
 
-class AddNumberPage extends StatelessWidget {
+class AddNumberPage extends StatefulWidget {
+  @override
+  _AddNumberPageState createState() => _AddNumberPageState();
+}
+
+class _AddNumberPageState extends State<AddNumberPage> {
+  final TextEditingController _phoneNumberController = TextEditingController();
+  final FirebaseService _firebaseService = FirebaseService();
+  
+  Future<void> _addPhoneNumber() async {
+    String newPhoneNumber = _normalizePhoneNumber(_phoneNumberController.text.trim());
+
+    // Validasi nomor telepon
+    if (newPhoneNumber.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Please enter a phone number')));
+      return;
+    }
+
+    try {
+      await _firebaseService.addPhoneNumber(newPhoneNumber);
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Number Added: $newPhoneNumber')));
+      Navigator.pop(context, newPhoneNumber); // Return the new phone number
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
+    }
+  }
+
+  String _normalizePhoneNumber(String phoneNumber) {
+    if (phoneNumber.startsWith('0')) {
+      return '+62' + phoneNumber.substring(1);
+    }
+    return phoneNumber;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset:
-          false, // Agar konten tidak naik saat keyboard terbuka
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         backgroundColor: Color(0xFFA41724),
         leading: IconButton(
@@ -17,29 +50,25 @@ class AddNumberPage extends StatelessWidget {
             width: 30,
             height: 30,
           ),
-          onPressed: () {
-            Navigator.pop(context);
-          },
+          onPressed: () => Navigator.pop(context),
         ),
         title: Text(
           'Add Number',
           style: TextStyle(
-            color: Colors.white, // Ubah warna teks menjadi putih
+            color: Colors.white,
           ),
         ),
-        centerTitle: true, // Menetapkan judul ke tengah Appbar
-        titleSpacing: 0, // Jarak antara judul dengan tombol dan leading widget
+        centerTitle: true,
       ),
       body: Stack(
         children: [
-          // Background image
           Center(
             child: Opacity(
-              opacity: 0.3, // Atur opasitas gambar
+              opacity: 0.3,
               child: Image.asset(
                 'images/ULET.png',
-                width: 200, // Ukuran gambar
-                height: 200, // Ukuran gambar
+                width: 200,
+                height: 200,
                 fit: BoxFit.cover,
               ),
             ),
@@ -52,40 +81,31 @@ class AddNumberPage extends StatelessWidget {
                 Expanded(
                   child: Container(
                     decoration: BoxDecoration(
-                      color: Color(0xFFFCEDEE), // Warna background
-                      borderRadius: BorderRadius.circular(10), // Radius border
-                      border:
-                          Border.all(color: Color(0xFFFFCED2)), // Warna border
+                      color: Color(0xFFFCEDEE),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: Color(0xFFFFCED2)),
                     ),
                     child: TextField(
+                      controller: _phoneNumberController,
                       decoration: InputDecoration(
                         labelText: 'Input Number',
-                        labelStyle: TextStyle(
-                            color: Color(0xFF000000).withOpacity(0.5),
-                            fontSize: 19 * 0.8), // Label text color
-                        border: InputBorder.none, // Hilangkan border default
-                        contentPadding: EdgeInsets.symmetric(
-                            horizontal: 15), // Padding konten
+                        labelStyle: TextStyle(color: Color(0xFF000000).withOpacity(0.5), fontSize: 19 * 0.8),
+                        border: InputBorder.none,
+                        contentPadding: EdgeInsets.symmetric(horizontal: 15),
                       ),
-                      keyboardType: TextInputType.number, // Accept only numbers
-                      style: TextStyle(
-                          color: Color(0xFFA41724)), // Input text color
+                      keyboardType: TextInputType.number,
+                      style: TextStyle(color: Color(0xFFA41724)),
                     ),
                   ),
                 ),
-                SizedBox(width: 10), // Jarak antara TextField dan tombol "Add"
+                SizedBox(width: 10),
                 ElevatedButton(
-                  onPressed: () {
-                    // Add your logic here
-                  },
+                  onPressed: _addPhoneNumber,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor:
-                        Color(0xFFA41724), // Button background color
-                    foregroundColor: Colors.white, // Text color
-                    padding: EdgeInsets.symmetric(
-                        horizontal: 25.0, vertical: 15.0), // Padding tombol
+                    backgroundColor: Color(0xFFA41724),
+                    foregroundColor: Colors.white,
+                    padding: EdgeInsets.symmetric(horizontal: 25.0, vertical: 15.0),
                     shape: RoundedRectangleBorder(
-                      // Menghilangkan sudut tombol
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
