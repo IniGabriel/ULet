@@ -31,7 +31,7 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> _getFullName(String phoneNumber) async {
     try {
-      String fullName = await PhoneAuth().getCurrentUserFullName(phoneNumber);
+      String fullName = await PhoneAuth().getCurrentUserFullName();
       setState(() {
         _fullName = fullName;
       });

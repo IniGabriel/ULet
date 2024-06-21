@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:ulet_1/api/wallet.dart';
 
 import 'package:ulet_1/security/hashing.dart';
 
@@ -27,6 +28,7 @@ class PhoneAuth {
   Future<bool> isOTPVerified({
     required String verificationId,
     String? fullName,
+    String? email,
     String? pin,
     required String otp,
   }) async {
@@ -37,9 +39,12 @@ class PhoneAuth {
       );
       final UserCredential userCredential =
           await _auth.signInWithCredential(authCredential);
-      if (fullName != null && pin != null) {
+      if (fullName != null && email != null && pin != null) {
+        await Wallet().postRegisterWallet(email, fullName);
+        String walletID = await Wallet().getWalletID(email);
+        await userCredential.user!.updateDisplayName(fullName);
         await storeUserCredential(
-            fullName, userCredential.user!.phoneNumber!, pin);
+            fullName, walletID, email, userCredential.user!.phoneNumber!, pin);
         return true;
       } else if (userCredential.user != null) {
         return true;
@@ -51,15 +56,28 @@ class PhoneAuth {
     }
   }
 
+  Future<void> updatePhoneNumber(String uid, String newPhoneNumber) async {
+    try {
+      await _firestore.collection('users').doc(uid).update({
+        'phone_number': newPhoneNumber,
+      });
+      print('Phone number updated successfully.');
+    } catch (e) {
+      print('Error updating phone number: $e');
+    }
+  }
+
 // store user credential to firestore
-  Future<void> storeUserCredential(
-      String fullName, String phoneNumber, String pin) async {
+  Future<void> storeUserCredential(String fullName, String walletID,
+      String email, String phoneNumber, String pin) async {
     try {
       User? user = _auth.currentUser;
       String userId = user!.uid;
       String hashedPin = Security().hashPin(pin);
       await _firestore.collection('users').doc(userId).set({
+        'wallet_id': walletID,
         'full_name': fullName,
+        'email': email,
         'phone_number': phoneNumber,
         'pin': hashedPin,
       });
@@ -91,22 +109,12 @@ class PhoneAuth {
     }
   }
 
-  Future<void> updatePhoneNumber(String uid, String newPhoneNumber) async {
-    try {
-      await _firestore.collection('users').doc(uid).update({
-        'phone_number': newPhoneNumber,
-      });
-      print('Phone number updated successfully.');
-    } catch (e) {
-      print('Error updating phone number: $e');
-    }
-  }
-
+  // get current user's phone number
   Future<String> getCurrentUserPhoneNumber() async {
     try {
       User? user = _auth.currentUser;
       if (user != null) {
-        print(user.phoneNumber.toString());
+        // print(user.phoneNumber.toString());
         return user.phoneNumber.toString();
       }
       return 'Not Found';
@@ -116,23 +124,47 @@ class PhoneAuth {
     }
   }
 
-  Future<String> getCurrentUserFullName(String phoneNumber) async {
+  // get current user's full name
+  Future<String> getCurrentUserFullName() async {
     try {
-      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-          .collection('users')
-          .where('phone_number', isEqualTo: phoneNumber)
-          .get();
-      if (querySnapshot.docs.isNotEmpty) {
-        String userName = querySnapshot.docs.first.get('full_name');
-        print(userName);
-        return userName;
-      } else {
-        print('No user found with the given phone number.');
-        return 'Not Found';
+      User? user = _auth.currentUser;
+      if (user != null) {
+        print(user.displayName.toString());
+        print(user);
+        print('bisa gg gaming ez');
+        return user.displayName.toString();
       }
+      return 'Not Found';
+      print('anehhhhhhhhhhhhhhhhhhhhhhhh');
     } catch (e) {
-      print('Error getting full name: $e');
+      print('Error getting current user dislay name: $e');
       return 'Error';
     }
+  }
+
+  // get current user's walletID
+  Future<String> getWalletIDCurrentUser() async {
+    final User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      final String? phoneNumber = user.phoneNumber;
+      if (phoneNumber != null) {
+        final QuerySnapshot<Map<String, dynamic>> querySnapshot =
+            await FirebaseFirestore.instance
+                .collection('users')
+                .where('phone_number', isEqualTo: phoneNumber)
+                .limit(1)
+                .get();
+
+        final List<QueryDocumentSnapshot<Map<String, dynamic>>> docs =
+            querySnapshot.docs;
+        if (docs.isNotEmpty) {
+          final Map<String, dynamic>? userData = docs.first.data();
+          if (userData != null) {
+            return userData['wallet_id'] as String;
+          }
+        }
+      }
+    }
+    return 'Not Found';
   }
 }

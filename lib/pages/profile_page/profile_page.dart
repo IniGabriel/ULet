@@ -4,6 +4,12 @@ import 'package:ulet_1/pages/changenumber_page/change_phone_number.dart';
 import 'package:ulet_1/pages/qr/qr_generator.dart';
 import 'package:ulet_1/pages/user_form/sign_in.dart';
 import 'package:ulet_1/utils/snackbar_alert.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'dart:io';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:typed_data';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({Key? key}) : super(key: key);
@@ -15,8 +21,17 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   String? _phoneNumber;
   String? _fullName;
+  String? imageUrl;
+  bool _isLoading = false;
+
+  void _setLoading(bool isLoading) {
+    setState(() {
+      _isLoading = isLoading;
+    });
+  }
 
   void _signOut() async {
+    _setLoading(true);
     await PhoneAuth().signOut();
     bool isSignedOut = await PhoneAuth().isSignedOut();
     if (mounted) {
@@ -30,6 +45,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       } else {
         CustomSnackbarAlert().showSnackbarError('Failed to sign out', context);
       }
+      _setLoading(false);
     }
   }
 
@@ -44,14 +60,37 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-  Future<void> _getFullName(String phoneNumber) async {
+  Future<void> _getFullName() async {
     try {
-      String fullName = await PhoneAuth().getCurrentUserFullName(phoneNumber);
+      String fullName = await PhoneAuth().getCurrentUserFullName();
       setState(() {
         _fullName = fullName;
+        print('full name adalah : $_fullName');
       });
     } catch (e) {
       print('Error getting full name: $e');
+    }
+  }
+
+  Future<void> _loadImage(String nama) async {
+    try {
+      final userRef = FirebaseStorage.instance
+          .refFromURL('gs://ulet-a6713.appspot.com/$nama');
+      String downloadUserUrl = await userRef.getDownloadURL();
+      print(downloadUserUrl);
+      print(userRef);
+
+      setState(() {
+        imageUrl = downloadUserUrl;
+      });
+    } catch (e) {
+      print('AdAA ERRRORRRRRR : $e');
+      final defaultRef = FirebaseStorage.instance
+          .refFromURL('gs://ulet-a6713.appspot.com/tester.jpg');
+      String downloadURL = await defaultRef.getDownloadURL();
+      setState(() {
+        imageUrl = downloadURL;
+      });
     }
   }
 
@@ -60,7 +99,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
     super.initState();
     _getPhoneNumber().then((_) {
       if (_phoneNumber != null) {
-        _getFullName(_phoneNumber!);
+        _getFullName().then((_) {
+          if (_fullName != null) {
+            _loadImage(_fullName!);
+          }
+        });
+        print('kelar load image');
       }
     });
   }
@@ -69,185 +113,351 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      body: Padding(
-        padding: const EdgeInsets.all(0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              color: const Color(0xFFA41724),
-              width: double.infinity,
-              padding: const EdgeInsets.only(
-                  left: 22, right: 22, top: 15, bottom: 56),
-              child: Column(
-                children: [
-                  const Text(
-                    "Profile",
-                    style: const TextStyle(
-                      fontSize: 26,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+      body: Stack(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  color: const Color(0xFFA41724),
+                  width: double.infinity,
+                  padding: const EdgeInsets.only(
+                      left: 22, right: 22, top: 15, bottom: 56),
+                  child: Column(
                     children: [
-                      Container(
-                        width: 100,
-                        height: 100,
-                        decoration: const BoxDecoration(
-                          shape: BoxShape.circle,
-                          image: DecorationImage(
-                            image: AssetImage('images/tester_.jpg'),
-                            fit: BoxFit.cover,
-                          ),
+                      const Text(
+                        "Profile",
+                        style: TextStyle(
+                          fontSize: 26,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
                         ),
                       ),
-                      const SizedBox(width: 20),
-                      Column(
+                      const SizedBox(height: 20),
+                      Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          if (_fullName != null)
-                            Text(
-                              _fullName!,
-                              style: const TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
-                            )
-                          else
-                            const Text(
-                              'Loading...',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
+                          Container(
+                            width: 100,
+                            height: 100,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              image: imageUrl != null
+                                  ? DecorationImage(
+                                      image: NetworkImage(imageUrl!),
+                                      fit: BoxFit.cover,
+                                    )
+                                  : null,
                             ),
-                          const SizedBox(height: 10),
-                          if (_phoneNumber != null)
-                            Text(
-                              _phoneNumber!,
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.grey[300],
-                              ),
-                            )
-                          else
-                            Text(
-                              'Loading...',
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.grey[300],
-                              ),
-                            ),
-                          const SizedBox(height: 10),
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (BuildContext context) =>
-                                      QRGenerator()));
-                            },
-                            child: Container(
-                              padding: const EdgeInsets.all(10),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(30),
-                                border: Border.all(
-                                  color: Colors.grey[300]!,
-                                  width: 2,
-                                ),
-                              ),
-                              child: Row(
-                                children: [
-                                  Icon(
-                                    Icons.qr_code_2,
-                                    color: Colors.grey[300],
-                                    size: 16,
+                            child: imageUrl == null
+                                ? const Center(
+                                    child: CircularProgressIndicator())
+                                : null,
+                          ),
+                          const SizedBox(width: 20),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              if (_fullName != null)
+                                Text(
+                                  _fullName!,
+                                  style: const TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
                                   ),
-                                  const SizedBox(width: 5),
-                                  Text(
-                                    'Show QR Code',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      color: Colors.grey[300],
+                                )
+                              else
+                                const Text(
+                                  'Loading...',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              const SizedBox(height: 10),
+                              if (_phoneNumber != null)
+                                Text(
+                                  _phoneNumber!,
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.grey[300],
+                                  ),
+                                )
+                              else
+                                Text(
+                                  'Loading...',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.grey[300],
+                                  ),
+                                ),
+                              const SizedBox(height: 10),
+                              GestureDetector(
+                                onTap: () {
+                                  Navigator.of(context).push(MaterialPageRoute(
+                                      builder: (BuildContext context) =>
+                                          QRGenerator()));
+                                },
+                                child: Container(
+                                  padding: const EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(30),
+                                    border: Border.all(
+                                      color: Colors.grey[300]!,
+                                      width: 2,
                                     ),
                                   ),
-                                ],
+                                  child: Row(
+                                    children: [
+                                      Icon(
+                                        Icons.qr_code_2,
+                                        color: Colors.grey[300],
+                                        size: 16,
+                                      ),
+                                      const SizedBox(width: 5),
+                                      Text(
+                                        'Show QR Code',
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          color: Colors.grey[300],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
                               ),
-                            ),
+                            ],
                           ),
                         ],
                       ),
                     ],
                   ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 40),
-            const OpsiProfile(
-              icon: Icons.lock_reset,
-              text: "Change Password",
-            ),
-            const OpsiProfile(
-              icon: Icons.account_circle,
-              text: "Profile",
-            ),
-            OpsiProfile(
-              icon: Icons.phone_android,
-              text: "Change Phone Number",
-              onTap: () {
-                Navigator.of(context).push(MaterialPageRoute(
-                    builder: (BuildContext context) =>
-                        ChangePhoneNumberPage()));
-              },
-            ),
-            const OpsiProfile(
-              icon: Icons.lock_reset,
-              text: "Change Pin",
-            ),
-            const SizedBox(height: 50),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 22),
-              child: ElevatedButton(
-                onPressed: _signOut,
-                style: ElevatedButton.styleFrom(
-                  foregroundColor: Colors.white,
-                  backgroundColor: const Color(0xFFA41724),
-                  textStyle: const TextStyle(
-                    fontSize: 18,
-                  ),
-                  minimumSize: const Size(double.infinity, 50),
                 ),
-                child: const Text("Sign out"),
+                const SizedBox(height: 40),
+                if (_fullName != null) ...[
+                  OpsiProfile(
+                    icon: Icons.account_circle,
+                    text: "Change Profile Picture",
+                    fullName: _fullName!,
+                    phoneNumber: _phoneNumber!,
+                    loadImage: _loadImage,
+                    getFullName: _getFullName,
+                    setLoading: _setLoading,
+                  ),
+                  OpsiProfile(
+                    icon: Icons.edit,
+                    text: "Change Username",
+                    fullName: _fullName!,
+                    phoneNumber: _phoneNumber!,
+                    loadImage: _loadImage,
+                    getFullName: _getFullName,
+                    setLoading: _setLoading,
+                  ),
+                  OpsiProfile(
+                    icon: Icons.edit_document,
+                    text: "Change Phone Number",
+                    fullName: _fullName!,
+                    phoneNumber: _phoneNumber!,
+                    loadImage: _loadImage,
+                    getFullName: _getFullName,
+                    setLoading: _setLoading,
+                  ),
+                  OpsiProfile(
+                    icon: Icons.lock_reset,
+                    text: "Change Pin",
+                    fullName: _fullName!,
+                    phoneNumber: _phoneNumber!,
+                    loadImage: _loadImage,
+                    getFullName: _getFullName,
+                    setLoading: _setLoading,
+                  ),
+                ] else ...[
+                  const Center(child: CircularProgressIndicator())
+                ],
+                const SizedBox(height: 50),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 22),
+                  child: ElevatedButton(
+                    onPressed: _signOut,
+                    style: ElevatedButton.styleFrom(
+                      foregroundColor: Colors.white,
+                      backgroundColor: const Color(0xFFA41724),
+                      textStyle: const TextStyle(
+                        fontSize: 18,
+                      ),
+                      minimumSize: const Size(double.infinity, 50),
+                    ),
+                    child: const Text("Sign out"),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          if (_isLoading) // Add this block to show a loading indicator
+            Container(
+              color: Colors.black.withOpacity(0.5),
+              child: const Center(
+                child: CircularProgressIndicator(),
               ),
             ),
-          ],
-        ),
+        ],
       ),
     );
   }
 }
 
-class OpsiProfile extends StatelessWidget {
+class OpsiProfile extends StatefulWidget {
   final IconData icon;
   final String text;
-  final VoidCallback?
-      onTap; // Tambahkan tanda tanya (?) untuk membuatnya opsional
+  final String fullName;
+  final String phoneNumber;
+  final Function(String) loadImage;
+  final Future<void> Function() getFullName;
+  final Function(bool) setLoading;
 
   const OpsiProfile({
     Key? key,
     required this.icon,
     required this.text,
-    this.onTap, // Tandai sebagai opsional dengan menggunakan tanda tanya
+    required this.fullName,
+    required this.phoneNumber,
+    required this.loadImage,
+    required this.getFullName,
+    required this.setLoading,
   }) : super(key: key);
+
+  @override
+  _OpsiProfileState createState() => _OpsiProfileState();
+}
+
+class _OpsiProfileState extends State<OpsiProfile> {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  void _changeProfile(String? fullName) async {
+    try {
+      if (fullName == null) return;
+
+      widget.setLoading(true);
+
+      ImagePicker imagePicker = ImagePicker();
+      XFile? file = await imagePicker.pickImage(source: ImageSource.gallery);
+      print('${file?.path}');
+
+      if (file == null) {
+        widget.setLoading(false);
+        return;
+      }
+
+      final storageRef = FirebaseStorage.instance.ref();
+      final String fileName = fullName;
+      final imageRef = storageRef.child(fileName);
+
+      await imageRef.putFile(File(file.path));
+      widget.loadImage(fileName);
+
+      widget.setLoading(false);
+    } catch (e) {
+      print('Error during profile picture upload: $e');
+      widget.setLoading(false);
+    }
+  }
+
+  void _formUsername(String fullName, String phoneNumber) async {
+    try {
+      String newUsername = '';
+
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return StatefulBuilder(
+            builder: (BuildContext context, setState) {
+              return AlertDialog(
+                title: const Text('Change Username'),
+                content: TextField(
+                  decoration:
+                      const InputDecoration(hintText: 'Enter new username'),
+                  onChanged: (value) {
+                    setState(() {
+                      newUsername = value;
+                    });
+                  },
+                ),
+                actions: <Widget>[
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text('Cancel'),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      _changeUsername(newUsername, fullName, phoneNumber);
+                    },
+                    child: const Text('Save'),
+                  ),
+                ],
+              );
+            },
+          );
+        },
+      );
+    } catch (e) {
+      print('Error');
+    }
+  }
+
+  void _changeUsername(String newUsername, fullName, phoneNumber) async {
+    User? user = _auth.currentUser;
+    String userId = user!.uid;
+
+    widget.setLoading(true);
+
+    try {
+      final oldFileRef = FirebaseStorage.instance.ref().child(fullName);
+      final oldFileData = await oldFileRef.getData();
+      final Uint8List data = oldFileData!;
+
+      final newFileRef = FirebaseStorage.instance.ref().child(newUsername);
+      await newFileRef.putData(data);
+      await oldFileRef.delete();
+    } catch (e) {
+      print('Belum pernah ganti gambar!');
+    }
+
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .set({'full_name': newUsername}, SetOptions(merge: true)).then((_) {
+      print('Full name updated successfully');
+    });
+
+    await user.updateDisplayName(newUsername);
+    print(user);
+    widget.getFullName();
+
+    widget.getFullName();
+    // widget.loadImage(newUsername);
+
+    widget.setLoading(false);
+  }
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap:
-          onTap, // Gunakan onTap sesuai dengan nilai yang diberikan atau null jika tidak ada
+      onTap: () {
+        if (widget.text == "Change Profile Picture") {
+          _changeProfile(widget.fullName);
+        } else if (widget.text == "Change Username") {
+          _formUsername(widget.fullName, widget.phoneNumber);
+        } else {
+          print("${widget.text} Di Tekan!");
+        }
+      },
       child: ListTile(
         leading: Container(
           width: 40,
@@ -256,9 +466,9 @@ class OpsiProfile extends StatelessWidget {
             borderRadius: BorderRadius.circular(100),
             color: Colors.grey.withOpacity(0.1),
           ),
-          child: Icon(icon),
+          child: Icon(widget.icon),
         ),
-        title: Text(text),
+        title: Text(widget.text),
         trailing: const Icon(Icons.arrow_forward_ios),
       ),
     );
