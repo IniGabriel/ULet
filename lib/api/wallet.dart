@@ -139,7 +139,6 @@ Future<double> getWalletBalance(String email) async {
     // Parse JSON response to Dart object
     final Map<String, dynamic> data = json.decode(response.body);
 
-    // Extract WalletId from the response
     final double walletBalance = (data['Balance'] as num).toDouble();
     print('Response data: ${response.body}');
     return walletBalance;
@@ -149,6 +148,81 @@ Future<double> getWalletBalance(String email) async {
   }
 }
 
+  Future<String> postBill(String walletId, int amount, String transInfo) async {
+    final Uri url = Uri.parse(baseURL).replace(
+      path: 'PAY-API/API/CreateBill',
+    );
+
+    final Map<String, String> headers = {
+      'Authorization': authorizationToken,
+      'Content-Type': 'application/json',
+      'X-AppId': appID,
+      'X-AppKey': appKey,
+      'X-WalletId': walletId,
+    };
+
+    final Map<String, String> body = {
+      "MerchantTransId": "",
+      "Amount": amount.toString(),
+      "ExpireMinutes": "60",
+      "TransInfo" : transInfo,
+      "itemsInfo" : ""
+    };
+
+    final response = await http.post(
+      url,
+      headers: headers,
+      body: jsonEncode(body),
+    );
+
+    if (response.statusCode == 200) {
+      // Parse the response body JSON
+      Map<String, dynamic> responseBody = jsonDecode(response.body);
+
+      // Extract the TransId from the response
+      String transId = responseBody['TransId'];
+
+      // Print or use the TransId as needed
+      print('==========================================================================================TransId: $transId');
+      // print('Response data: ${response.body}');
+      return transId;
+    } else {
+      print('Failed to make request. Status code: ${response.statusCode}');
+      return 'failed';
+    }
+  }
+
+  Future<String> payBill(String walletId, String transId) async {
+    final Uri url = Uri.parse(baseURL).replace(
+      path: 'PAY-API/API/Pay',
+    );
+
+    final Map<String, String> headers = {
+      'Authorization': authorizationToken,
+      'Content-Type': 'application/json',
+      'X-AppId': appID,
+      'X-AppKey': appKey,
+      'X-WalletId': walletId,
+    };
+
+    final Map<String, String> body = {
+      "TransId": transId,
+    };
+
+    final response = await http.post(
+      url,
+      headers: headers,
+      body: jsonEncode(body),
+    );
+
+    if (response.statusCode == 200) {
+      print('Response data: ${response.body}');
+      return 'success';
+    } else {
+      print('Failed to make request. Status code: ${response.statusCode}');
+      return 'failed';
+    }
+  }
 }
 
 

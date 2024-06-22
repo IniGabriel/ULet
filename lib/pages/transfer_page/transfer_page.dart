@@ -6,7 +6,7 @@ import 'package:ulet_1/firebase/firebase_service.dart';
 import 'package:ulet_1/firebase/phone_auth.dart';
 import 'package:ulet_1/pages/top_up/top_up.dart';
 import 'package:intl/intl.dart';
-
+import 'package:ulet_1/pages/transfer_page/transfer_amount_page.dart';
 
 
 class TransferPage extends StatefulWidget {
@@ -383,55 +383,72 @@ Widget build(BuildContext context) {
                       ),
                     ),
                     SizedBox(height: 10),
-                    Expanded(
-                      child: ListView.builder(
-  itemCount: _addedNumbers.length,
-  itemBuilder: (context, index) {
-    final phoneNumber = _addedNumbers[index];
-    return FutureBuilder(
-      future: _firebaseService.getContactName(phoneNumber),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return CircularProgressIndicator();
-        } else if (snapshot.hasError) {
-          return Text('Error: ${snapshot.error}');
-        } else {
-          final contactName = snapshot.data as String? ?? phoneNumber;
+Expanded(
+  child: ListView.builder(
+    itemCount: _addedNumbers.length,
+    itemBuilder: (context, index) {
+      final phoneNumber = _addedNumbers[index];
+      // Filter based on search query
+      if (_searchQuery.isNotEmpty && !phoneNumber.toLowerCase().contains(_searchQuery)) {
+        return Container(); // Return an empty container if not matching
+      }
+      return FutureBuilder(
+        future: _firebaseService.getContactName(phoneNumber),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return CircularProgressIndicator();
+          } else if (snapshot.hasError) {
+            return Text('Error: ${snapshot.error}');
+          } else {
+            final contactName = snapshot.data as String? ?? phoneNumber;
 
-          return Container(
-            margin: const EdgeInsets.symmetric(vertical: 5.0),
-            padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
-            decoration: BoxDecoration(
-              color: Color.fromARGB(255, 252, 237, 238),
-              borderRadius: BorderRadius.circular(7.0),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(contactName, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-                    SizedBox(height: 5),
-                    Text(phoneNumber, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-                  ],
-                ),
-                Expanded(
-                  child: Container(),
-                ),
-                IconButton(
-                  icon: Icon(Icons.delete, color: Colors.red),
-                  onPressed: () => _showConfirmationDialog(phoneNumber),
-                ),
-              ],
-            ),
-          );
-        }
-      },
-    );
-  },
+            return GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => TransferAmountPage(
+                      phoneNumber: phoneNumber,
+                      contactName: contactName,
+                    ),
+                  ),
+                );
+              },
+            child: Container(
+              margin: const EdgeInsets.symmetric(vertical: 5.0),
+              padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
+              decoration: BoxDecoration(
+                color: Color.fromARGB(255, 252, 237, 238),
+                borderRadius: BorderRadius.circular(7.0),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(contactName, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                      SizedBox(height: 5),
+                      Text(phoneNumber, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                    ],
+                  ),
+                  Expanded(
+                    child: Container(),
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.delete, color: Colors.red),
+                    onPressed: () => _showConfirmationDialog(phoneNumber),
+                  ),
+                ],
+              ),
+            ));
+          }
+        },
+      );
+    },
+  ),
 ),
-                    )
+                    
                   ],
                 ),
               ),

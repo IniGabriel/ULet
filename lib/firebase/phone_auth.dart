@@ -184,4 +184,65 @@ Future<double> getWalletBalanceCurrentUser() async {
   return 0.0;
 }
 
+Future<String> findWalletId(String otherPhoneNumber) async{
+  final QuerySnapshot<Map<String, dynamic>> querySnapshot = await FirebaseFirestore.instance
+    .collection('users')
+    .where('phone_number', isEqualTo: otherPhoneNumber)
+    .limit(1)
+    .get();
+    final List<QueryDocumentSnapshot<Map<String, dynamic>>> docs = querySnapshot.docs;
+    if (docs.isNotEmpty) {
+      final Map<String, dynamic>? userData = docs.first.data();
+      if (userData != null) {
+        return userData['wallet_id'] as String;
+      }
+    }
+    return 'Not Found';
+}
+
+  Future<String> transferBalance(String toNumber, int amount, String info) async {
+  try {
+    // Step 1: Find walletId associated with toNumber
+    String otherWalletId = await findWalletId(toNumber);
+
+    if (otherWalletId == "Not Found") {
+      return "Phone Number Not Found";
+    }
+
+    // Step 2: Post bill to the recipient's wallet
+    String transId = await Wallet().postBill(otherWalletId, amount, info);
+
+    // Step 3: Retrieve current user's data
+    final User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      final String? phoneNumber = user.phoneNumber;
+      if (phoneNumber != null) {
+        final QuerySnapshot<Map<String, dynamic>> querySnapshot =
+            await FirebaseFirestore.instance
+                .collection('users')
+                .where('phone_number', isEqualTo: phoneNumber)
+                .limit(1)
+                .get();
+
+        final List<QueryDocumentSnapshot<Map<String, dynamic>>> docs =
+            querySnapshot.docs;
+        if (docs.isNotEmpty) {
+          final Map<String, dynamic>? userData = docs.first.data();
+          if (userData != null) {
+            String senderWallet = userData['wallet_id'] as String;
+
+            // Step 4: Pay the bill from sender's wallet
+            await Wallet().payBill(senderWallet, transId);
+            return "Success";
+          }
+        }
+      }
+    }
+    
+    return "Error: User data not found";
+  } catch (e) {
+    print("Error in transferBalance: $e");
+    return "Error: Something went wrong";
+  }
+} 
 }
