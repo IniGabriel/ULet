@@ -5,6 +5,7 @@ import 'package:ulet_1/utils/colors.dart';
 import 'package:ulet_1/firebase/phone_auth.dart';
 import 'package:ulet_1/utils/snackbar_alert.dart';
 import 'package:ulet_1/pages/home_page/bottom_navbar.dart';
+import 'package:ulet_1/pages/profile_page/change_pin.dart';
 
 class OTPVerification extends StatefulWidget {
   final String verificationId;
@@ -12,6 +13,7 @@ class OTPVerification extends StatefulWidget {
   final String? email;
   final String phoneNumber;
   final String? pin;
+  final String? note;
 
   const OTPVerification({
     super.key,
@@ -20,6 +22,7 @@ class OTPVerification extends StatefulWidget {
     this.email,
     required this.phoneNumber,
     this.pin,
+    this.note,
   });
 
   @override
@@ -45,12 +48,21 @@ class _OTPVerificationState extends State<OTPVerification> {
     );
     if (mounted) {
       if (isOTPVerified) {
+        if (widget.note!="change pin"){
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
             builder: (context) => const BottomNavbar(),
           ),
         );
+        } else if (widget.note=="change pin"){
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const ChangePinPage(),
+            ),
+          );
+        }
       } else {
         CustomSnackbarAlert().showSnackbarError('Incorrect OTP Code!', context);
       }
