@@ -58,6 +58,36 @@ class PhoneAuth {
     }
   }
 
+  Future<void> updatePhoneNumber(String uid, String newPhoneNumber) async {
+    try {
+      await _firestore.collection('users').doc(uid).update({
+        'phone_number': newPhoneNumber,
+      });
+      print('Phone number updated successfully.');
+    } catch (e) {
+      print('Error updating phone number: $e');
+    }
+  }
+
+// store user credential to firestore
+  Future<void> storeUserCredential(String fullName, String walletID,
+      String email, String phoneNumber, String pin) async {
+    try {
+      User? user = _auth.currentUser;
+      String userId = user!.uid;
+      String hashedPin = Security().hashPin(pin);
+      await _firestore.collection('users').doc(userId).set({
+        'wallet_id': walletID,
+        'full_name': fullName,
+        'email': email,
+        'phone_number': phoneNumber,
+        'pin': hashedPin,
+      });
+    } catch (e) {
+      print('Error storing user credential: $e');
+    }
+  }
+
   // sign out current user
   Future<void> signOut() async {
     try {
@@ -262,23 +292,7 @@ Future<double> getWalletBalanceCurrentUser() async {
     }
   }
 
-  Future<void> storeUserCredential(String fullName, String walletID,
-      String email, String phoneNumber, String pin) async {
-    try {
-      User? user = _auth.currentUser;
-      String userId = user!.uid;
-      String hashedPin = Security().hashPin(pin);
-      await _firestore.collection('users').doc(userId).set({
-        'wallet_id': walletID,
-        'full_name': fullName,
-        'email': email,
-        'phone_number': phoneNumber,
-        'pin': hashedPin,
-      });
-    } catch (e) {
-      print('Error storing user credential: $e');
-    }
-  }
+
 
   Future<String> _verifyPin(String enteredPin) async {
     try {

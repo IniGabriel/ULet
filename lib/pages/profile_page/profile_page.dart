@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:ulet_1/firebase/phone_auth.dart';
 import 'package:ulet_1/pages/qr/qr_generator.dart';
 import 'package:ulet_1/pages/user_form/sign_in.dart';
 import 'package:ulet_1/utils/snackbar_alert.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'dart:typed_data';
+
+import 'package:ulet_1/firebase/phone_auth.dart';
+import 'package:ulet_1/firebase/firebase_profile.dart';
+import 'package:ulet_1/pages/user_form/otp_verification.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({Key? key}) : super(key: key);
@@ -21,7 +20,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   String? _phoneNumber;
   String? _fullName;
   String? imageUrl;
-  bool _isLoading = false; 
+  bool _isLoading = false;
 
   void _setLoading(bool isLoading) {
     setState(() {
@@ -29,6 +28,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     });
   }
 
+// To log out from current account
   void _signOut() async {
     _setLoading(true);
     await PhoneAuth().signOut();
@@ -48,6 +48,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
+// Get phonenumber from phone_auth.dart, to display it in profile page
+
   Future<void> _getPhoneNumber() async {
     try {
       String phoneNumber = await PhoneAuth().getCurrentUserPhoneNumber();
@@ -59,36 +61,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
+// Get username from phone_auth.dart, to display it in profile page
   Future<void> _getFullName() async {
     try {
       String fullName = await PhoneAuth().getCurrentUserFullName();
       setState(() {
         _fullName = fullName;
-        print('full name adalah : $_fullName');
       });
     } catch (e) {
       print('Error getting full name: $e');
     }
   }
 
+// To load image for the first time, and it used when _changeProfilePicture is called
   Future<void> _loadImage(String nama) async {
-    try {
-      final userRef = FirebaseStorage.instance.refFromURL('gs://ulet-a6713.appspot.com/$nama');
-      String downloadUserUrl = await userRef.getDownloadURL();
-      print(downloadUserUrl);
-      print(userRef);
+    String downloadUserUrl = await FirebaseProfile().getImageUrl(nama);
 
-      setState(() {
-        imageUrl = downloadUserUrl;
-      });
-    } catch (e) {
-      print('AdAA ERRRORRRRRR : $e');
-      final defaultRef = FirebaseStorage.instance.refFromURL('gs://ulet-a6713.appspot.com/tester.jpg');
-      String downloadURL = await defaultRef.getDownloadURL();
-      setState(() {
-        imageUrl = downloadURL;
-      });
-    }
+    setState(() {
+      imageUrl = downloadUserUrl;
+    });
   }
 
   @override
@@ -98,10 +89,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
       if (_phoneNumber != null) {
         _getFullName().then((_) {
           if (_fullName != null) {
-            _loadImage(_fullName!);
+            _loadImage(_phoneNumber!);
           }
         });
-        print('kelar load image');
       }
     });
   }
@@ -118,12 +108,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
-                  color: Color(0xFFA41724),
+                  color: const Color(0xFFA41724),
                   width: double.infinity,
-                  padding: EdgeInsets.only(left: 22, right: 22, top: 15, bottom: 56),
+                  padding: const EdgeInsets.only(
+                      left: 22, right: 22, top: 15, bottom: 56),
                   child: Column(
                     children: [
-                      Text(
+                      const Text(
                         "Profile",
                         style: TextStyle(
                           fontSize: 26,
@@ -131,7 +122,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           color: Colors.white,
                         ),
                       ),
-                      SizedBox(height: 20),
+                      const SizedBox(height: 20),
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -148,24 +139,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   : null,
                             ),
                             child: imageUrl == null
-                                ? Center(child: CircularProgressIndicator())
+                                ? const Center(
+                                    child: CircularProgressIndicator())
                                 : null,
                           ),
-                          SizedBox(width: 20),
+                          const SizedBox(width: 20),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               if (_fullName != null)
                                 Text(
                                   _fullName!,
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     fontSize: 18,
                                     fontWeight: FontWeight.bold,
                                     color: Colors.white,
                                   ),
                                 )
                               else
-                                Text(
+                                const Text(
                                   'Loading...',
                                   style: TextStyle(
                                     fontSize: 18,
@@ -173,7 +165,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     color: Colors.white,
                                   ),
                                 ),
-                              SizedBox(height: 10),
+                              const SizedBox(height: 10),
                               if (_phoneNumber != null)
                                 Text(
                                   _phoneNumber!,
@@ -190,14 +182,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     color: Colors.grey[300],
                                   ),
                                 ),
-                              SizedBox(height: 10),
+                              const SizedBox(height: 10),
                               GestureDetector(
                                 onTap: () {
                                   Navigator.of(context).push(MaterialPageRoute(
-                                      builder: (BuildContext context) => QRGenerator()));
+                                      builder: (BuildContext context) =>
+                                          QRGenerator()));
                                 },
                                 child: Container(
-                                  padding: EdgeInsets.all(10),
+                                  padding: const EdgeInsets.all(10),
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(30),
                                     border: Border.all(
@@ -212,7 +205,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         color: Colors.grey[300],
                                         size: 16,
                                       ),
-                                      SizedBox(width: 5),
+                                      const SizedBox(width: 5),
                                       Text(
                                         'Show QR Code',
                                         style: TextStyle(
@@ -231,7 +224,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ],
                   ),
                 ),
-                SizedBox(height: 40),
+                const SizedBox(height: 40),
                 if (_fullName != null) ...[
                   OpsiProfile(
                     icon: Icons.account_circle,
@@ -243,7 +236,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     setLoading: _setLoading,
                   ),
                   OpsiProfile(
-                    icon: Icons.lock_reset,
+                    icon: Icons.edit,
                     text: "Change Username",
                     fullName: _fullName!,
                     phoneNumber: _phoneNumber!,
@@ -252,17 +245,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     setLoading: _setLoading,
                   ),
                   OpsiProfile(
-                    icon: Icons.phone_android,
-                    text: "Mobile",
-                    fullName: _fullName!,
-                    phoneNumber: _phoneNumber!,
-                    loadImage: _loadImage,
-                    getFullName: _getFullName,
-                    setLoading: _setLoading,
-                  ),
-                  OpsiProfile(
-                    icon: Icons.home,
-                    text: "Home",
+                    icon: Icons.lock_reset,
+                    text: "Change Pin",
                     fullName: _fullName!,
                     phoneNumber: _phoneNumber!,
                     loadImage: _loadImage,
@@ -270,22 +254,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     setLoading: _setLoading,
                   ),
                 ] else ...[
-                  Center(child: CircularProgressIndicator())
+                  const Center(child: CircularProgressIndicator())
                 ],
-                SizedBox(height: 50),
+                SizedBox(height: 75),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 22),
                   child: ElevatedButton(
                     onPressed: _signOut,
                     style: ElevatedButton.styleFrom(
                       foregroundColor: Colors.white,
-                      backgroundColor: Color(0xFFA41724),
-                      textStyle: TextStyle(
+                      backgroundColor: const Color(0xFFA41724),
+                      textStyle: const TextStyle(
                         fontSize: 18,
                       ),
-                      minimumSize: Size(double.infinity, 50),
+                      minimumSize: const Size(double.infinity, 50),
                     ),
-                    child: Text("Sign out"),
+                    child: const Text("Sign out"),
                   ),
                 ),
               ],
@@ -294,7 +278,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           if (_isLoading) // Add this block to show a loading indicator
             Container(
               color: Colors.black.withOpacity(0.5),
-              child: Center(
+              child: const Center(
                 child: CircularProgressIndicator(),
               ),
             ),
@@ -331,35 +315,27 @@ class OpsiProfile extends StatefulWidget {
 class _OpsiProfileState extends State<OpsiProfile> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  void _changeProfile(String? fullName) async {
-    try {
-      if (fullName == null) return;
+  // Change Profile Picture
+  void _changeProfile(String? phoneNumber) async {
+    if (phoneNumber == null) return;
 
-      widget.setLoading(true);
+    widget.setLoading(true);
 
-      ImagePicker imagePicker = ImagePicker();
-      XFile? file = await imagePicker.pickImage(source: ImageSource.gallery);
-      print('${file?.path}');
+    ImagePicker imagePicker = ImagePicker();
+    XFile? file = await imagePicker.pickImage(source: ImageSource.gallery);
 
-      if (file == null) {
-        widget.setLoading(false);
-        return;
-      }
-
-      final storageRef = FirebaseStorage.instance.ref();
-      final String fileName = fullName;
-      final imageRef = storageRef.child(fileName);
-
-      await imageRef.putFile(File(file.path));
-      widget.loadImage(fileName);
-
+    if (file == null) {
       widget.setLoading(false);
-    } catch (e) {
-      print('Error during profile picture upload: $e');
-      widget.setLoading(false);
+      return;
     }
+
+    FirebaseProfile().changeProfile(phoneNumber, file);
+    await Future.delayed(Duration(seconds: 2));
+    widget.loadImage(phoneNumber);
+    widget.setLoading(false);
   }
 
+  // To give a form for changing username, after that it will go to the _changeUsername function
   void _formUsername(String fullName, String phoneNumber) async {
     try {
       String newUsername = '';
@@ -370,9 +346,10 @@ class _OpsiProfileState extends State<OpsiProfile> {
           return StatefulBuilder(
             builder: (BuildContext context, setState) {
               return AlertDialog(
-                title: Text('Change Username'),
+                title: const Text('Change Username'),
                 content: TextField(
-                  decoration: InputDecoration(hintText: 'Enter new username'),
+                  decoration:
+                      const InputDecoration(hintText: 'Enter new username'),
                   onChanged: (value) {
                     setState(() {
                       newUsername = value;
@@ -384,14 +361,14 @@ class _OpsiProfileState extends State<OpsiProfile> {
                     onPressed: () {
                       Navigator.of(context).pop();
                     },
-                    child: Text('Cancel'),
+                    child: const Text('Cancel'),
                   ),
                   TextButton(
                     onPressed: () {
                       Navigator.of(context).pop();
-                      _changeUsername(newUsername, fullName, phoneNumber);
+                      _changeUsername(newUsername, phoneNumber);
                     },
-                    child: Text('Save'),
+                    child: const Text('Save'),
                   ),
                 ],
               );
@@ -404,40 +381,36 @@ class _OpsiProfileState extends State<OpsiProfile> {
     }
   }
 
-  void _changeUsername(String newUsername, fullName, phoneNumber) async {
+  // To save the new username
+  void _changeUsername(String newUsername, String phoneNumber) async {
     User? user = _auth.currentUser;
     String userId = user!.uid;
 
     widget.setLoading(true);
-
-    try{
-    final oldFileRef = FirebaseStorage.instance.ref().child(fullName);
-    final oldFileData = await oldFileRef.getData();
-    final Uint8List data = oldFileData!;
-
-    final newFileRef = FirebaseStorage.instance.ref().child(newUsername);
-    await newFileRef.putData(data);
-    await oldFileRef.delete();
-    } catch (e){
-      print('Belum pernah ganti gambar!');
-    }
-
-    FirebaseFirestore.instance
-        .collection('users')
-        .doc(userId)
-        .set({'full_name': newUsername}, SetOptions(merge: true))
-        .then((_) {
-      print('Full name updated successfully');
-    });
+    FirebaseProfile().changeUsername(newUsername, userId);
 
     await user.updateDisplayName(newUsername);
-    print(user);
     widget.getFullName();
-
-    widget.getFullName();
-    // widget.loadImage(newUsername);
-
     widget.setLoading(false);
+  }
+
+  // Change Pin
+  void _changePin() async {
+    String note = "change pin";
+    String newNumber = widget.phoneNumber.replaceFirst('+62', '');
+
+    await PhoneAuth().sendOTP(newNumber, (String verificationId) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => OTPVerification(
+            verificationId: verificationId,
+            phoneNumber: newNumber,
+            note: note,
+          ),
+        ),
+      );
+    });
   }
 
   @override
@@ -445,9 +418,11 @@ class _OpsiProfileState extends State<OpsiProfile> {
     return GestureDetector(
       onTap: () {
         if (widget.text == "Change Profile Picture") {
-          _changeProfile(widget.fullName);
+          _changeProfile(widget.phoneNumber);
         } else if (widget.text == "Change Username") {
           _formUsername(widget.fullName, widget.phoneNumber);
+        } else if (widget.text == "Change Pin") {
+          _changePin();
         } else {
           print("${widget.text} Di Tekan!");
         }
@@ -463,8 +438,41 @@ class _OpsiProfileState extends State<OpsiProfile> {
           child: Icon(widget.icon),
         ),
         title: Text(widget.text),
-        trailing: Icon(Icons.arrow_forward_ios),
+        trailing: const Icon(Icons.arrow_forward_ios),
       ),
     );
   }
 }
+
+
+
+// class OpsiProfile extends StatelessWidget {
+//   final IconData icon;
+//   final String text;
+
+//   const OpsiProfile({Key? key, required this.icon, required this.text})
+//       : super(key: key);
+// @override
+//   Widget build(BuildContext context) {
+//     return GestureDetector(
+//       onTap: () {
+//         print("$text Di Tekan!");
+//       },
+//       child: ListTile(
+//         leading: Container(
+//           width: 40,
+//           height: 40,
+//           decoration: BoxDecoration(
+//             borderRadius: BorderRadius.circular(100),
+//             color: Colors.grey.withOpacity(0.1),
+//           ),
+//           child: Icon(icon),
+//         ),
+//         title: Text(text),
+//         trailing: const Icon(Icons.arrow_forward_ios),
+//       ),
+//     );
+//   }
+// }
+
+  
