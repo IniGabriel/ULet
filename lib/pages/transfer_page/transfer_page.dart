@@ -8,7 +8,6 @@ import 'package:ulet_1/pages/top_up/top_up.dart';
 import 'package:intl/intl.dart';
 import 'package:ulet_1/pages/transfer_page/transfer_amount_page.dart';
 
-
 class TransferPage extends StatefulWidget {
   const TransferPage({Key? key}) : super(key: key);
 
@@ -17,41 +16,39 @@ class TransferPage extends StatefulWidget {
 }
 
 class _TransferPageState extends State<TransferPage> {
-
   String? _phoneNumber;
   String? _fullName;
   List<String> _addedNumbers = [];
   final FirebaseService _firebaseService = FirebaseService();
   String _searchQuery = '';
   double? _balance;
-  
 
-Future<void> _getPhoneNumber() async {
-  try {
-    String phoneNumber = await PhoneAuth().getCurrentUserPhoneNumber();
-    setState(() {
-      _phoneNumber = phoneNumber;
-    });
-    print('Phone number: $_phoneNumber');
-    if (_phoneNumber != null) {
-      _getWalletBalance();
+  Future<void> _getPhoneNumber() async {
+    try {
+      String phoneNumber = await PhoneAuth().getCurrentUserPhoneNumber();
+      setState(() {
+        _phoneNumber = phoneNumber;
+      });
+      print('Phone number: $_phoneNumber');
+      if (_phoneNumber != null) {
+        _getWalletBalance();
+      }
+    } catch (e) {
+      print('Error getting phone number: $e');
     }
-  } catch (e) {
-    print('Error getting phone number: $e');
   }
-}
 
-Future<void> _getWalletBalance() async {
-  try {
-    double balance = await PhoneAuth().getWalletBalanceCurrentUser();
-    setState(() {
-      _balance = balance;
-    });
-    print('Wallet balance: $_balance');
-  } catch (e) {
-    print('Error getting wallet balance: $e');
+  Future<void> _getWalletBalance() async {
+    try {
+      double balance = await PhoneAuth().getWalletBalanceCurrentUser();
+      setState(() {
+        _balance = balance;
+      });
+      print('Wallet balance: $_balance');
+    } catch (e) {
+      print('Error getting wallet balance: $e');
+    }
   }
-}
 
   Future<void> _getFullName() async {
     try {
@@ -75,82 +72,80 @@ Future<void> _getWalletBalance() async {
     }
   }
 
-@override
-void initState() {
-  super.initState();
-  _getPhoneNumber().then((_) {
-    if (_phoneNumber != null) {
-      _getFullName().then((_) {
-        _loadContactList();
-        _getWalletBalance();
-      });
-    }
-  });
-}
+  @override
+  void initState() {
+    super.initState();
+    _getPhoneNumber().then((_) {
+      if (_phoneNumber != null) {
+        _getFullName().then((_) {
+          _loadContactList();
+          _getWalletBalance();
+        });
+      }
+    });
+  }
 
-@override
-Widget build(BuildContext context) {
-  double screenHeight = MediaQuery.of(context).size.height;
-  double screenWidth = MediaQuery.of(context).size.width;
+  @override
+  Widget build(BuildContext context) {
+    double screenHeight = MediaQuery.of(context).size.height;
+    double screenWidth = MediaQuery.of(context).size.width;
 
-  return Scaffold(
-    body: Column(
-      children: [
-        Container(
-          width: double.infinity,
-          height: screenHeight * 0.41,
-          color: Color(0xFFA41724),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  width: double.infinity,
-                  padding: EdgeInsets.only(left: 30),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      if (_fullName != null)
-                        Text(
-                          _fullName!,
-                          style: TextStyle(
-                            fontSize: 18,
-                            color: Colors.white,
+    return Scaffold(
+      body: Column(
+        children: [
+          Container(
+            width: double.infinity,
+            height: screenHeight * 0.41,
+            color: Color(0xFFA41724),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    width: double.infinity,
+                    padding: EdgeInsets.only(left: 30),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        if (_fullName != null)
+                          Text(
+                            _fullName!,
+                            style: TextStyle(
+                              fontSize: 18,
+                              color: Colors.white,
+                            ),
+                          )
+                        else
+                          Text(
+                            'Loading...',
+                            style: TextStyle(
+                              fontSize: 18,
+                              color: Colors.white,
+                            ),
                           ),
-                        )
-                      else
+                        SizedBox(height: 5),
                         Text(
-                          'Loading...',
+                          'Total Balance',
                           style: TextStyle(
-                            fontSize: 18,
                             color: Colors.white,
+                            fontSize: 28,
                           ),
                         ),
-                      SizedBox(height: 5),
-                      Text(
-                        'Total Balance',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 28,
+                        SizedBox(height: 7),
+                        Text(
+                          _balance != null
+                              ? NumberFormat.currency(locale: 'id_ID', symbol: 'Rp. ', decimalDigits: 2).format(_balance)
+                              : 'Loading...',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 28,
+                          ),
                         ),
-                      ),
-                      SizedBox(height: 7),
-                      Text(
-  _balance != null
-      ? NumberFormat.currency(locale: 'id_ID', symbol: 'Rp. ', decimalDigits: 2)
-          .format(_balance)
-      : 'Loading...',
-  style: TextStyle(
-    color: Colors.white,
-    fontSize: 28,
-  ),
-),
-
-                    ],
+                      ],
+                    ),
                   ),
-                ),
                   SizedBox(height: 10),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -231,7 +226,8 @@ Widget build(BuildContext context) {
                                   children: [
                                     SvgPicture.string(
                                       '''<svg width="31" height="26" viewBox="0 0 31 26" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M17.4167 0.25C14.0352 0.25 10.7922 1.5933 8.40107 3.98439C6.00999 6.37548 4.66669 9.61849 4.66669 13H0.416687L5.92752 18.5108L6.02669 18.7092L11.75 13H7.50002C7.50002 7.5175 11.9342 3.08333 17.4167 3.08333C22.8992 3.08333 27.3334 7.5175 27.3334 13C27.3334 18.4825 22.8992 22.9167 17.4167 22.9167C14.9118 22.9167 12.5479 21.9269 10.7909 20.1699L8.78661 22.1741C10.967 24.3546 13.962 25.75 17.4167 25.75C20.7982 25.7521 24.0412 24.4067 26.4323 22.0156C28.8234 19.6245 30.1667 16.3815 30.1667 13C30.1667 9.61849 28.8234 6.37548 26.4323 3.98439C24.0412 1.5933 20.7982 0.25 17.4167 0.25ZM16 7.33333V14.4167L22.0209 17.9867L23.1117 16.1592L18.125 13.1983V7.33333H16Z" fill="black"/>
+                                        <path d="M17.4167 0.25C14.0352 0.25 10.7922 1.5933 8.40107 3.98439C6.00999 6.37548 4.66669 9.61849 4.66669 13H0.416687L5.92752 18.5108L6.02669 18.7092L11.75 13H7.50002C7.50002 7.5175 11.9342 3.08333 17.4167 3.08333C22.8992 3.08333 27.3334 7.5175 27.3334 13C27.3334 18.
+                        0825 22.9167 22.9167C14.9118 22.9167 12.5479 21.9269 10.7909 20.1699L8.78661 22.1741C10.967 24.3546 13.962 25.75 17.4167 25.75C20.7982 25.7521 24.0412 24.4067 26.4323 22.0156C28.8234 19.6245 30.1667 16.3815 30.1667 13C30.1667 9.61849 28.8234 6.37548 26.4323 3.98439C24.0412 1.5933 20.7982 0.25 17.4167 0.25ZM16 7.33333V14.4167L22.0209 17.9867L23.1117 16.1592L18.125 13.1983V7.33333H16Z" fill="black"/>
                                       </svg>
                                       ''',
                                     ),
@@ -383,72 +379,74 @@ Widget build(BuildContext context) {
                       ),
                     ),
                     SizedBox(height: 10),
-Expanded(
-  child: ListView.builder(
-    itemCount: _addedNumbers.length,
-    itemBuilder: (context, index) {
-      final phoneNumber = _addedNumbers[index];
-      // Filter based on search query
-      if (_searchQuery.isNotEmpty && !phoneNumber.toLowerCase().contains(_searchQuery)) {
-        return Container(); // Return an empty container if not matching
-      }
-      return FutureBuilder(
-        future: _firebaseService.getContactName(phoneNumber),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return CircularProgressIndicator();
-          } else if (snapshot.hasError) {
-            return Text('Error: ${snapshot.error}');
-          } else {
-            final contactName = snapshot.data as String? ?? phoneNumber;
+                    Expanded(
+                      child: ListView.builder(
+                        itemCount: _addedNumbers.length,
+                        itemBuilder: (context, index) {
+                          final phoneNumber = _addedNumbers[index];
+                          // Filter based on search query
+                          if (_searchQuery.isNotEmpty && !phoneNumber.toLowerCase().contains(_searchQuery)) {
+                            return Container(); // Return an empty container if not matching
+                          }
+                          return FutureBuilder(
+                            future: _firebaseService.getContactName(phoneNumber),
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState == ConnectionState.waiting) {
+                                return CircularProgressIndicator();
+                              } else if (snapshot.hasError) {
+                                return Text('Error: ${snapshot.error}');
+                              } else {
+                                final contactName = snapshot.data as String? ?? phoneNumber;
 
-            return GestureDetector(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => TransferAmountPage(
-                      phoneNumber: phoneNumber,
-                      contactName: contactName,
+                                return GestureDetector(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => TransferAmountPage(
+                                          phoneNumber: phoneNumber,
+                                          contactName: contactName,
+                                        ),
+                                      ),
+                                    ).then((_) {
+                                      _getWalletBalance(); // Refresh balance after returning from TransferAmountPage
+                                    });
+                                  },
+                                  child: Container(
+                                    margin: const EdgeInsets.symmetric(vertical: 5.0),
+                                    padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
+                                    decoration: BoxDecoration(
+                                      color: Color.fromARGB(255, 252, 237, 238),
+                                      borderRadius: BorderRadius.circular(7.0),
+                                    ),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Text(contactName, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                                            SizedBox(height: 5),
+                                            Text(phoneNumber, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                                          ],
+                                        ),
+                                        Expanded(
+                                          child: Container(),
+                                        ),
+                                        IconButton(
+                                          icon: Icon(Icons.delete, color: Colors.red),
+                                          onPressed: () => _showConfirmationDialog(phoneNumber),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              }
+                            },
+                          );
+                        },
+                      ),
                     ),
-                  ),
-                );
-              },
-            child: Container(
-              margin: const EdgeInsets.symmetric(vertical: 5.0),
-              padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
-              decoration: BoxDecoration(
-                color: Color.fromARGB(255, 252, 237, 238),
-                borderRadius: BorderRadius.circular(7.0),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(contactName, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-                      SizedBox(height: 5),
-                      Text(phoneNumber, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-                    ],
-                  ),
-                  Expanded(
-                    child: Container(),
-                  ),
-                  IconButton(
-                    icon: Icon(Icons.delete, color: Colors.red),
-                    onPressed: () => _showConfirmationDialog(phoneNumber),
-                  ),
-                ],
-              ),
-            ));
-          }
-        },
-      );
-    },
-  ),
-),
-                    
                   ],
                 ),
               ),
@@ -485,7 +483,7 @@ Expanded(
               child: Text('OK'),
               onPressed: () async {
                 Navigator.of(context).pop();
-                await _deletePhoneNumber(phoneNumber); // Delete the number after confirmation
+                await _deletePhoneNumber(phoneNumber);
               },
             ),
           ],

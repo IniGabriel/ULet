@@ -79,7 +79,6 @@ class _TransferAmountPageState extends State<TransferAmountPage> {
   String hashedEnteredPin = Security().hashPin(enteredPin);
 
   String pinVerificationResult = await _verifyPin(enteredPin);
-  print("=========================================================================================="+pinVerificationResult);
 
     if (pinVerificationResult == 'Success') {
       String amount = _amountController.text.trim();
@@ -258,7 +257,7 @@ class _TransferAmountPageState extends State<TransferAmountPage> {
                                 onPressed: () {
                                   Navigator.of(context).pop(); // Close the dialog
                                 },
-                                child: Text('Cancel'),
+                                child: Text('Cancel', style: TextStyle(color: Colors.black)),
                               ),
                             ],
                           );
@@ -267,6 +266,10 @@ class _TransferAmountPageState extends State<TransferAmountPage> {
                     }
                   : null,
               child: Text('Transfer'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color.fromARGB(255, 164, 23, 36),
+                foregroundColor: Colors.white,
+              ),
             ),
           ],
         ),

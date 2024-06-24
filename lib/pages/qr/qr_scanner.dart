@@ -125,48 +125,54 @@ class _QRScannerState extends State<QRScanner> with WidgetsBindingObserver {
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Container(
-                                margin: const EdgeInsets.only(
-                                    top: 20, right: 15, left: 15, bottom: 20),
-                                width: double.infinity,
-                                height: 50,
-                                decoration: BoxDecoration(
-                                    gradient: const LinearGradient(
-                                        colors: [
-                                          Colors.white,
-                                          Colors.red,
-                                          Colors.white
-                                        ],
-                                        begin: Alignment.topCenter,
-                                        end: Alignment.bottomCenter),
-                                    borderRadius: const BorderRadius.all(
-                                        Radius.circular(25)),
-                                    border: Border.all(
-                                        color: const Color(0xFFA41724), width: 1.5)),
-                                // Scanned Data Here
-                                child: Expanded(
-                                  child: Center(
-                                    child: _buildBarcode(_barcode),
+                              Expanded(
+                                flex: 2,
+                                child: Container(
+                                  margin: const EdgeInsets.only(
+                                      top: 5, right: 15, left: 15, bottom: 5),
+                                  width: double.infinity,
+                                  height: 50,
+                                  decoration: BoxDecoration(
+                                      gradient: const LinearGradient(
+                                          colors: [
+                                            Colors.white,
+                                            Colors.red,
+                                            Colors.white
+                                          ],
+                                          begin: Alignment.topCenter,
+                                          end: Alignment.bottomCenter),
+                                      borderRadius: const BorderRadius.all(
+                                          Radius.circular(25)),
+                                      border: Border.all(
+                                          color: const Color(0xFFA41724), width: 1.5)),
+                                  // Scanned Data Here
+                                  child: Expanded(
+                                    child: Center(
+                                      child: _buildBarcode(_barcode),
+                                    ),
                                   ),
                                 ),
                               ),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceAround,
-                                children: [
-                                  Expanded(
-                                      flex: 2,
-                                      child: Container(
-                                          color: const Color(0xFFA41724),
-                                          child: ToggleFlashlightButton(
-                                              controller: controller))),
-                                  // Expanded(
-                                  //     flex: 2,
-                                  //     child: Container(
-                                  //         color: Colors.lightGreenAccent,
-                                  //         child: AnalyzeImageFromGalleryButton(
-                                  //             controller: controller))),
-                                ],
+                              Expanded(
+                                flex: 2,
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceAround,
+                                  children: [
+                                    Expanded(
+                                        flex: 2,
+                                        child: Container(
+                                            color: const Color(0xFFA41724),
+                                            child: ToggleFlashlightButton(
+                                                controller: controller))),
+                                    // Expanded(
+                                    //     flex: 2,
+                                    //     child: Container(
+                                    //         color: Colors.lightGreenAccent,
+                                    //         child: AnalyzeImageFromGalleryButton(
+                                    //             controller: controller))),
+                                  ],
+                                ),
                               )
                             ],
                           ),
@@ -230,52 +236,6 @@ class ToggleFlashlightButton extends StatelessWidget {
               color: Colors.grey,
             );
         }
-      },
-    );
-  }
-}
-
-class AnalyzeImageFromGalleryButton extends StatelessWidget {
-  const AnalyzeImageFromGalleryButton({required this.controller, super.key});
-
-  final MobileScannerController controller;
-
-  @override
-  Widget build(BuildContext context) {
-    return IconButton(
-      color: Colors.black,
-      icon: const Icon(Icons.image),
-      iconSize: 32.0,
-      onPressed: () async {
-        final ImagePicker picker = ImagePicker();
-
-        final XFile? image = await picker.pickImage(
-          source: ImageSource.gallery,
-        );
-
-        if (image == null) {
-          return;
-        }
-
-        final BarcodeCapture? barcodes = await controller.analyzeImage(
-          image.path,
-        );
-
-        if (!context.mounted) {
-          return;
-        }
-
-        final SnackBar snackbar = barcodes != null
-            ? const SnackBar(
-                content: Text('Barcode found!'),
-                backgroundColor: Colors.green,
-              )
-            : const SnackBar(
-                content: Text('No barcode found!'),
-                backgroundColor: Colors.red,
-              );
-
-        ScaffoldMessenger.of(context).showSnackBar(snackbar);
       },
     );
   }

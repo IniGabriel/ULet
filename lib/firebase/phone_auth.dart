@@ -213,7 +213,7 @@ Future<double> getWalletBalanceCurrentUser() async {
                   transId: transId,
                   transDate: DateTime.now(),
                   amount: amount.toDouble(),
-                  senderName: userData['full_name'],
+                  senderName: userData['phone_number'],
                   recipientName: toNumber,
                   description: info,
                 );
