@@ -68,21 +68,47 @@ class _TransferAmountPageState extends State<TransferAmountPage> {
               ),
             ),
             SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () async {
-                // Handle transfer logic here
-                String amount = _amountController.text;
-                String description = _descriptionController.text;
+ElevatedButton(
+  onPressed: () async {
+    String amount = _amountController.text;
+    String description = _descriptionController.text;
 
-                // You can add logic to handle the transfer operation here
-                String response = await PhoneAuth().transferBalance(widget.phoneNumber, int.parse(amount), description);
-                
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('$response Transferring $amount to ${widget.phoneNumber}')),
-                );
-              },
-              child: Text('Transfer'),
-            ),
+    if (amount.isEmpty || description.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Please fill in all fields')),
+      );
+      return;
+    }
+
+    int amountValue = int.tryParse(amount) ?? 0;
+
+    if (amountValue <= 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Invalid amount')),
+      );
+      return;
+    }
+
+    String response = await PhoneAuth().transferBalance(
+      widget.phoneNumber,
+      amountValue,
+      description,
+    );
+
+    if (response == "Success") {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('$response Transferring $amount to ${widget.phoneNumber}')),
+      );
+      // Optionally, navigate back to previous screen or perform other actions
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Transfer failed: $response')),
+      );
+    }
+  },
+  child: Text('Transfer'),
+),
+
           ],
         ),
       ),

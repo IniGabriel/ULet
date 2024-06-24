@@ -11,13 +11,20 @@ class AddNumberPage extends StatefulWidget {
 class _AddNumberPageState extends State<AddNumberPage> {
   final TextEditingController _phoneNumberController = TextEditingController();
   final FirebaseService _firebaseService = FirebaseService();
-  
+
   Future<void> _addPhoneNumber() async {
     String newPhoneNumber = _normalizePhoneNumber(_phoneNumberController.text.trim());
 
     // Validasi nomor telepon
     if (newPhoneNumber.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Please enter a phone number')));
+      return;
+    }
+
+    String currentUserPhoneNumber = await _firebaseService.getCurrentUserPhoneNumber();
+
+    if (newPhoneNumber == currentUserPhoneNumber) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Cannot add your own number')));
       return;
     }
 
@@ -36,8 +43,6 @@ class _AddNumberPageState extends State<AddNumberPage> {
     }
     return phoneNumber;
   }
-
-  
 
   @override
   Widget build(BuildContext context) {

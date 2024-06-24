@@ -3,7 +3,7 @@ import 'dart:ffi';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:ulet_1/api/wallet.dart';
-
+import 'package:ulet_1/firebase/history.dart';
 import 'package:ulet_1/security/hashing.dart';
 
 class PhoneAuth {
@@ -184,23 +184,36 @@ Future<double> getWalletBalanceCurrentUser() async {
   return 0.0;
 }
 
-Future<String> findWalletId(String otherPhoneNumber) async{
-  final QuerySnapshot<Map<String, dynamic>> querySnapshot = await FirebaseFirestore.instance
-    .collection('users')
-    .where('phone_number', isEqualTo: otherPhoneNumber)
-    .limit(1)
-    .get();
-    final List<QueryDocumentSnapshot<Map<String, dynamic>>> docs = querySnapshot.docs;
+Future<String> findWalletId(String otherPhoneNumber) async {
+  try {
+    final QuerySnapshot<Map<String, dynamic>> querySnapshot =
+        await FirebaseFirestore.instance
+            .collection('users')
+            .where('phone_number', isEqualTo: otherPhoneNumber)
+            .limit(1)
+            .get();
+
+    final List<QueryDocumentSnapshot<Map<String, dynamic>>> docs =
+        querySnapshot.docs;
+
     if (docs.isNotEmpty) {
       final Map<String, dynamic>? userData = docs.first.data();
-      if (userData != null) {
+      if (userData != null && userData.containsKey('wallet_id')) {
         return userData['wallet_id'] as String;
+      } else {
+        return 'Wallet ID Not Found';
       }
+    } else {
+      return 'User Not Found';
     }
-    return 'Not Found';
+  } catch (e) {
+    print('Error finding wallet ID: $e');
+    return 'Error';
+  }
 }
 
-  Future<String> transferBalance(String toNumber, int amount, String info) async {
+
+Future<String> transferBalance(String toNumber, int amount, String info) async {
   try {
     // Step 1: Find walletId associated with toNumber
     String otherWalletId = await findWalletId(toNumber);
@@ -233,6 +246,17 @@ Future<String> findWalletId(String otherPhoneNumber) async{
 
             // Step 4: Pay the bill from sender's wallet
             await Wallet().payBill(senderWallet, transId);
+
+            // Step 5: Store transfer history
+            await History().storeTransferHistory(
+              transId: transId,
+              transDate: DateTime.now(),
+              amount: amount.toDouble(),
+              senderName: userData['full_name'],
+              recipientName: toNumber, // Assuming recipientName is the phone number
+              description: info,
+            );
+
             return "Success";
           }
         }
@@ -244,5 +268,5 @@ Future<String> findWalletId(String otherPhoneNumber) async{
     print("Error in transferBalance: $e");
     return "Error: Something went wrong";
   }
-} 
+}
 }
