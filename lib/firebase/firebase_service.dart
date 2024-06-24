@@ -5,6 +5,19 @@ class FirebaseService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
+  Future<String> getCurrentUserPhoneNumber() async {
+    try {
+      User? user = _auth.currentUser;
+      if (user != null) {
+        return user.phoneNumber ?? ''; // Return user's phone number or an empty string if not available
+      }
+      return ''; // Return empty string if user is not found
+    } catch (e) {
+      print('Error getting current user phone number: $e');
+      return ''; // Return empty string on error
+    }
+  }
+
 Future<void> addPhoneNumber(String newPhoneNumber) async {
   User? user = _auth.currentUser;
   if (user != null) {
@@ -67,6 +80,19 @@ Future<bool> _phoneNumberExists(String phoneNumber) async {
     }
     return [];
   }
+
+  Future<String?> getContactName(String phoneNumber) async {
+  QuerySnapshot querySnapshot = await _firestore
+      .collection('users')
+      .where('phone_number', isEqualTo: phoneNumber)
+      .get();
+
+  if (querySnapshot.docs.isNotEmpty) {
+    return querySnapshot.docs.first.get('full_name') as String?;
+  } else {
+    return null;
+  }
+}
 
   Future<void> deletePhoneNumber(String phoneNumber) async {
     User? user = _auth.currentUser;

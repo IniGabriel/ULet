@@ -117,35 +117,112 @@ class Wallet {
     }
   }
 
-  // get balance from API
-  Future<double> getWalletBalance(String email) async {
+  // Get Wallet Balance
+Future<double> getWalletBalance(String email) async {
+  final Uri url = Uri.parse(baseURL).replace(
+    path: 'PAY-API/API/FindWallet',
+    queryParameters: {'email': email},
+  );
+
+  final Map<String, String> headers = {
+    'Authorization': authorizationToken,
+    'X-AppId': appID,
+    'X-AppKey': appKey,
+  };
+
+  final response = await http.get(
+    url,
+    headers: headers,
+  );
+
+  if (response.statusCode == 200) {
+    // Parse JSON response to Dart object
+    final Map<String, dynamic> data = json.decode(response.body);
+
+    final double walletBalance = (data['Balance'] as num).toDouble();
+    print('Response data: ${response.body}');
+    return walletBalance;
+  } else {
+    print('Failed to make request. Status code: ${response.statusCode}');
+    return 0.0;
+  }
+}
+
+  Future<String> postBill(String walletId, int amount, String transInfo) async {
     final Uri url = Uri.parse(baseURL).replace(
-      path: 'PAY-API/API/FindWallet',
-      queryParameters: {'email': email},
+      path: 'PAY-API/API/CreateBill',
     );
 
     final Map<String, String> headers = {
       'Authorization': authorizationToken,
+      'Content-Type': 'application/json',
       'X-AppId': appID,
       'X-AppKey': appKey,
+      'X-WalletId': walletId,
     };
 
-    final response = await http.get(
+    final Map<String, String> body = {
+      "MerchantTransId": "",
+      "Amount": amount.toString(),
+      "ExpireMinutes": "60",
+      "TransInfo" : transInfo,
+      "itemsInfo" : ""
+    };
+
+    final response = await http.post(
       url,
       headers: headers,
+      body: jsonEncode(body),
     );
 
     if (response.statusCode == 200) {
-      // Parse JSON response to Dart object
-      final Map<String, dynamic> data = json.decode(response.body);
+      // Parse the response body JSON
+      Map<String, dynamic> responseBody = jsonDecode(response.body);
 
-      // Extract WalletId from the response
-      final double walletBalance = (data['Balance'] as num).toDouble();
-      print('Response data: ${response.body}');
-      return walletBalance;
+      // Extract the TransId from the response
+      String transId = responseBody['TransId'];
+
+      // Print or use the TransId as needed
+      print('==========================================================================================TransId: $transId');
+      // print('Response data: ${response.body}');
+      return transId;
     } else {
       print('Failed to make request. Status code: ${response.statusCode}');
-      return 0.0;
+      return 'failed';
+    }
+  }
+
+  Future<String> payBill(String walletId, String transId) async {
+    final Uri url = Uri.parse(baseURL).replace(
+      path: 'PAY-API/API/Pay',
+    );
+
+    final Map<String, String> headers = {
+      'Authorization': authorizationToken,
+      'Content-Type': 'application/json',
+      'X-AppId': appID,
+      'X-AppKey': appKey,
+      'X-WalletId': walletId,
+    };
+
+    final Map<String, String> body = {
+      "TransId": transId,
+    };
+
+    final response = await http.post(
+      url,
+      headers: headers,
+      body: jsonEncode(body),
+    );
+
+    if (response.statusCode == 200) {
+      print('Response data: ${response.body}');
+      return 'success';
+    } else {
+      print('Failed to make request. Status code: ${response.statusCode}');
+      return 'failed';
     }
   }
 }
+
+

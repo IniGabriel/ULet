@@ -1,7 +1,9 @@
+import 'dart:ffi';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:ulet_1/api/wallet.dart';
-
+import 'package:ulet_1/firebase/history.dart';
 import 'package:ulet_1/security/hashing.dart';
 
 class PhoneAuth {
@@ -131,7 +133,6 @@ class PhoneAuth {
       if (user != null) {
         print(user.displayName.toString());
         print(user);
-        print('bisa gg gaming ez');
         return user.displayName.toString();
       }
       return 'Not Found';
@@ -168,29 +169,171 @@ class PhoneAuth {
     return 'Not Found';
   }
 
-  Future<double> getWalletBalanceCurrentUser() async {
-    final User? user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-      final String? phoneNumber = user.phoneNumber;
-      if (phoneNumber != null) {
-        final QuerySnapshot<Map<String, dynamic>> querySnapshot =
-            await FirebaseFirestore.instance
-                .collection('users')
-                .where('phone_number', isEqualTo: phoneNumber)
-                .limit(1)
-                .get();
+Future<double> getWalletBalanceCurrentUser() async {
+  final User? user = FirebaseAuth.instance.currentUser;
+  if (user != null) {
+    final String? phoneNumber = user.phoneNumber;
+    if (phoneNumber != null) {
+      final QuerySnapshot<Map<String, dynamic>> querySnapshot =
+          await FirebaseFirestore.instance
+              .collection('users')
+              .where('phone_number', isEqualTo: phoneNumber)
+              .limit(1)
+              .get();
 
-        final List<QueryDocumentSnapshot<Map<String, dynamic>>> docs =
-            querySnapshot.docs;
-        if (docs.isNotEmpty) {
-          final Map<String, dynamic>? userData = docs.first.data();
-          if (userData != null) {
-            double balance = await Wallet().getWalletBalance(userData['email']);
-            return balance;
-          }
+      final List<QueryDocumentSnapshot<Map<String, dynamic>>> docs =
+          querySnapshot.docs;
+      if (docs.isNotEmpty) {
+        final Map<String, dynamic>? userData = docs.first.data();
+        if (userData != null) {
+          double balance = await Wallet().getWalletBalance(userData['email']);
+          return balance;
         }
       }
     }
-    return 0.0;
+  }
+  return 0.0;
+}
+
+  Future<String> transferBalance(String toNumber, int amount, String info) async {
+    try {
+      // Step 1: Find walletId associated with toNumber
+      String otherWalletId = await findWalletId(toNumber);
+
+      if (otherWalletId == "Not Found") {
+        return "Phone Number Not Found";
+      }
+
+      // Step 2: Post bill to the recipient's wallet
+      String transId = await Wallet().postBill(otherWalletId, amount, info);
+
+      // Step 3: Retrieve current user's data
+      final User? user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        final String? phoneNumber = user.phoneNumber;
+        if (phoneNumber != null) {
+          final QuerySnapshot<Map<String, dynamic>> querySnapshot =
+              await FirebaseFirestore.instance
+                  .collection('users')
+                  .where('phone_number', isEqualTo: phoneNumber)
+                  .limit(1)
+                  .get();
+
+          final List<QueryDocumentSnapshot<Map<String, dynamic>>> docs =
+              querySnapshot.docs;
+          if (docs.isNotEmpty) {
+            final Map<String, dynamic>? userData = docs.first.data();
+            if (userData != null) {
+              String senderWallet = userData['wallet_id'] as String;
+
+              // Step 4: Pay the bill from sender's wallet
+              await Wallet().payBill(senderWallet, transId);
+
+              // Step 5: Determine transaction direction
+              String transactionDirection;
+              if (toNumber == user.phoneNumber) {
+                transactionDirection = 'top_up'; // Self top-up
+              } else {
+                transactionDirection = 'transfer';
+              }
+
+              // Step 6: Store transaction history
+              if (transactionDirection == 'transfer') {
+                await History().storeTransferHistory(
+                  transId: transId,
+                  transDate: DateTime.now(),
+                  amount: amount.toDouble(),
+                  senderName: userData['phone_number'],
+                  recipientName: toNumber,
+                  description: info,
+                );
+              } else if (transactionDirection == 'top_up') {
+                await History().storeTopUpHistory(transId, DateTime.now(), amount);
+              }
+
+              return "Success";
+            }
+          }
+        }
+      }
+
+      return "Error: User data not found";
+    } catch (e) {
+      print("Error in transferBalance: $e");
+      return "Error: Something went wrong";
+    }
+  }
+
+  Future<String> findWalletId(String otherPhoneNumber) async {
+    try {
+      final QuerySnapshot<Map<String, dynamic>> querySnapshot =
+          await FirebaseFirestore.instance
+              .collection('users')
+              .where('phone_number', isEqualTo: otherPhoneNumber)
+              .limit(1)
+              .get();
+
+      final List<QueryDocumentSnapshot<Map<String, dynamic>>> docs =
+          querySnapshot.docs;
+
+      if (docs.isNotEmpty) {
+        final Map<String, dynamic>? userData = docs.first.data();
+        if (userData != null && userData.containsKey('wallet_id')) {
+          return userData['wallet_id'] as String;
+        } else {
+          return 'Wallet ID Not Found';
+        }
+      } else {
+        return 'User Not Found';
+      }
+    } catch (e) {
+      print('Error finding wallet ID: $e');
+      return 'Error';
+    }
+  }
+
+
+
+  Future<String> _verifyPin(String enteredPin) async {
+    try {
+      String phoneNumber = await getCurrentUserPhoneNumber();
+
+      if (phoneNumber == 'Not Found' || phoneNumber == 'Error') {
+        return 'Error';
+      }
+
+      QuerySnapshot<Map<String, dynamic>> querySnapshot =
+          await FirebaseFirestore.instance
+              .collection('users')
+              .where('phone_number', isEqualTo: phoneNumber)
+              .limit(1)
+              .get();
+
+      List<QueryDocumentSnapshot<Map<String, dynamic>>> docs = querySnapshot.docs;
+
+      if (docs.isNotEmpty) {
+        Map<String, dynamic>? userData = docs.first.data();
+        if (userData != null && userData.containsKey('pin')) {
+          String storedPinWithSalts = userData['pin'];
+
+          // Gunakan Security untuk memverifikasi PIN
+          Security security = Security();
+          bool isPinCorrect = security.comparePins(enteredPin, storedPinWithSalts);
+
+          if (isPinCorrect) {
+            return 'Success';
+          } else {
+            return 'Wrong PIN';
+          }
+        } else {
+          return 'PIN not set';
+        }
+      } else {
+        return 'User data not found';
+      }
+    } catch (e) {
+      print('Error verifying PIN: $e');
+      return 'Error';
+    }
   }
 }
