@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:ulet_1/firebase/phone_auth.dart';
 import 'package:ulet_1/pages/qr/qr_generator.dart';
 import 'package:ulet_1/pages/user_form/sign_in.dart';
 import 'package:ulet_1/utils/snackbar_alert.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'dart:typed_data';
+
+import 'package:ulet_1/firebase/phone_auth.dart';
+import 'package:ulet_1/firebase/firebase_profile.dart';
+import 'package:ulet_1/pages/user_form/otp_verification.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({Key? key}) : super(key: key);
@@ -23,12 +22,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
   String? imageUrl;
   bool _isLoading = false; 
 
+
   void _setLoading(bool isLoading) {
     setState(() {
       _isLoading = isLoading;
     });
   }
 
+// To log out from current account
   void _signOut() async {
     _setLoading(true);
     await PhoneAuth().signOut();
@@ -48,6 +49,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
+// Get phonenumber from phone_auth.dart, to display it in profile page
+
   Future<void> _getPhoneNumber() async {
     try {
       String phoneNumber = await PhoneAuth().getCurrentUserPhoneNumber();
@@ -59,36 +62,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
+// Get username from phone_auth.dart, to display it in profile page
   Future<void> _getFullName() async {
     try {
       String fullName = await PhoneAuth().getCurrentUserFullName();
       setState(() {
         _fullName = fullName;
-        print('full name adalah : $_fullName');
       });
     } catch (e) {
       print('Error getting full name: $e');
     }
   }
 
+// To load image for the first time, and it used when _changeProfilePicture is called
   Future<void> _loadImage(String nama) async {
-    try {
-      final userRef = FirebaseStorage.instance.refFromURL('gs://ulet-a6713.appspot.com/$nama');
-      String downloadUserUrl = await userRef.getDownloadURL();
-      print(downloadUserUrl);
-      print(userRef);
+    String downloadUserUrl = await FirebaseProfile().getImageUrl(nama);
 
-      setState(() {
-        imageUrl = downloadUserUrl;
-      });
-    } catch (e) {
-      print('AdAA ERRRORRRRRR : $e');
-      final defaultRef = FirebaseStorage.instance.refFromURL('gs://ulet-a6713.appspot.com/tester.jpg');
-      String downloadURL = await defaultRef.getDownloadURL();
-      setState(() {
-        imageUrl = downloadURL;
-      });
-    }
+    setState(() {
+      imageUrl = downloadUserUrl;
+    }); 
   }
 
   @override
@@ -98,10 +90,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
       if (_phoneNumber != null) {
         _getFullName().then((_) {
           if (_fullName != null) {
-            _loadImage(_fullName!);
+            _loadImage(_phoneNumber!);
           }
         });
-        print('kelar load image');
       }
     });
   }
@@ -243,7 +234,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     setLoading: _setLoading,
                   ),
                   OpsiProfile(
-                    icon: Icons.lock_reset,
+                    icon: Icons.edit,
                     text: "Change Username",
                     fullName: _fullName!,
                     phoneNumber: _phoneNumber!,
@@ -252,17 +243,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     setLoading: _setLoading,
                   ),
                   OpsiProfile(
-                    icon: Icons.phone_android,
-                    text: "Mobile",
-                    fullName: _fullName!,
-                    phoneNumber: _phoneNumber!,
-                    loadImage: _loadImage,
-                    getFullName: _getFullName,
-                    setLoading: _setLoading,
-                  ),
-                  OpsiProfile(
-                    icon: Icons.home,
-                    text: "Home",
+                    icon: Icons.lock_reset,
+                    text: "Change Pin",
                     fullName: _fullName!,
                     phoneNumber: _phoneNumber!,
                     loadImage: _loadImage,
@@ -272,7 +254,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ] else ...[
                   Center(child: CircularProgressIndicator())
                 ],
-                SizedBox(height: 50),
+                SizedBox(height: 75),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 22),
                   child: ElevatedButton(
@@ -331,35 +313,27 @@ class OpsiProfile extends StatefulWidget {
 class _OpsiProfileState extends State<OpsiProfile> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  void _changeProfile(String? fullName) async {
-    try {
-      if (fullName == null) return;
+  // Change Profile Picture
+  void _changeProfile(String? phoneNumber) async {
+    if (phoneNumber == null) return;
 
-      widget.setLoading(true);
+    widget.setLoading(true);
 
-      ImagePicker imagePicker = ImagePicker();
-      XFile? file = await imagePicker.pickImage(source: ImageSource.gallery);
-      print('${file?.path}');
+    ImagePicker imagePicker = ImagePicker();
+    XFile? file = await imagePicker.pickImage(source: ImageSource.gallery);
 
-      if (file == null) {
-        widget.setLoading(false);
-        return;
-      }
-
-      final storageRef = FirebaseStorage.instance.ref();
-      final String fileName = fullName;
-      final imageRef = storageRef.child(fileName);
-
-      await imageRef.putFile(File(file.path));
-      widget.loadImage(fileName);
-
+    if (file == null) {
       widget.setLoading(false);
-    } catch (e) {
-      print('Error during profile picture upload: $e');
-      widget.setLoading(false);
+      return;
     }
+
+    FirebaseProfile().changeProfile(phoneNumber, file);
+    await Future.delayed(Duration(seconds: 2));
+    widget.loadImage(phoneNumber);
+    widget.setLoading(false);
   }
 
+  // To give a form for changing username, after that it will go to the _changeUsername function
   void _formUsername(String fullName, String phoneNumber) async {
     try {
       String newUsername = '';
@@ -389,7 +363,7 @@ class _OpsiProfileState extends State<OpsiProfile> {
                   TextButton(
                     onPressed: () {
                       Navigator.of(context).pop();
-                      _changeUsername(newUsername, fullName, phoneNumber);
+                      _changeUsername(newUsername,phoneNumber);
                     },
                     child: Text('Save'),
                   ),
@@ -404,40 +378,37 @@ class _OpsiProfileState extends State<OpsiProfile> {
     }
   }
 
-  void _changeUsername(String newUsername, fullName, phoneNumber) async {
+  // To save the new username
+  void _changeUsername(String newUsername, String phoneNumber) async {
     User? user = _auth.currentUser;
     String userId = user!.uid;
 
     widget.setLoading(true);
-
-    try{
-    final oldFileRef = FirebaseStorage.instance.ref().child(fullName);
-    final oldFileData = await oldFileRef.getData();
-    final Uint8List data = oldFileData!;
-
-    final newFileRef = FirebaseStorage.instance.ref().child(newUsername);
-    await newFileRef.putData(data);
-    await oldFileRef.delete();
-    } catch (e){
-      print('Belum pernah ganti gambar!');
-    }
-
-    FirebaseFirestore.instance
-        .collection('users')
-        .doc(userId)
-        .set({'full_name': newUsername}, SetOptions(merge: true))
-        .then((_) {
-      print('Full name updated successfully');
-    });
+    FirebaseProfile().changeUsername(newUsername, userId);
 
     await user.updateDisplayName(newUsername);
-    print(user);
     widget.getFullName();
-
-    widget.getFullName();
-    // widget.loadImage(newUsername);
-
     widget.setLoading(false);
+  }
+
+  // Change Pin
+  void _changePin() async {
+    String note = "change pin";
+    String newNumber = widget.phoneNumber.replaceFirst('+62', '');
+    
+    await PhoneAuth().sendOTP(newNumber,
+      (String verificationId) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+          builder: (context) => OTPVerification(
+          verificationId: verificationId,
+          phoneNumber: newNumber,
+          note: note,
+          ),
+        ),
+      );
+    });    
   }
 
   @override
@@ -445,10 +416,12 @@ class _OpsiProfileState extends State<OpsiProfile> {
     return GestureDetector(
       onTap: () {
         if (widget.text == "Change Profile Picture") {
-          _changeProfile(widget.fullName);
+          _changeProfile(widget.phoneNumber);
         } else if (widget.text == "Change Username") {
           _formUsername(widget.fullName, widget.phoneNumber);
-        } else {
+        } else if (widget.text == "Change Pin") {
+            _changePin();
+          } else {
           print("${widget.text} Di Tekan!");
         }
       },
