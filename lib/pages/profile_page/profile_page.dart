@@ -20,8 +20,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   String? _phoneNumber;
   String? _fullName;
   String? imageUrl;
-  bool _isLoading = false; 
-
+  bool _isLoading = false;
 
   void _setLoading(bool isLoading) {
     setState(() {
@@ -80,7 +79,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     setState(() {
       imageUrl = downloadUserUrl;
-    }); 
+    });
   }
 
   @override
@@ -109,12 +108,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
-                  color: Color(0xFFA41724),
+                  color: const Color(0xFFA41724),
                   width: double.infinity,
-                  padding: EdgeInsets.only(left: 22, right: 22, top: 15, bottom: 56),
+                  padding: const EdgeInsets.only(
+                      left: 22, right: 22, top: 15, bottom: 56),
                   child: Column(
                     children: [
-                      Text(
+                      const Text(
                         "Profile",
                         style: TextStyle(
                           fontSize: 26,
@@ -122,7 +122,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           color: Colors.white,
                         ),
                       ),
-                      SizedBox(height: 20),
+                      const SizedBox(height: 20),
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -139,24 +139,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   : null,
                             ),
                             child: imageUrl == null
-                                ? Center(child: CircularProgressIndicator())
+                                ? const Center(
+                                    child: CircularProgressIndicator())
                                 : null,
                           ),
-                          SizedBox(width: 20),
+                          const SizedBox(width: 20),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               if (_fullName != null)
                                 Text(
                                   _fullName!,
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     fontSize: 18,
                                     fontWeight: FontWeight.bold,
                                     color: Colors.white,
                                   ),
                                 )
                               else
-                                Text(
+                                const Text(
                                   'Loading...',
                                   style: TextStyle(
                                     fontSize: 18,
@@ -164,7 +165,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     color: Colors.white,
                                   ),
                                 ),
-                              SizedBox(height: 10),
+                              const SizedBox(height: 10),
                               if (_phoneNumber != null)
                                 Text(
                                   _phoneNumber!,
@@ -181,14 +182,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     color: Colors.grey[300],
                                   ),
                                 ),
-                              SizedBox(height: 10),
+                              const SizedBox(height: 10),
                               GestureDetector(
                                 onTap: () {
                                   Navigator.of(context).push(MaterialPageRoute(
-                                      builder: (BuildContext context) => QRGenerator()));
+                                      builder: (BuildContext context) =>
+                                          QRGenerator()));
                                 },
                                 child: Container(
-                                  padding: EdgeInsets.all(10),
+                                  padding: const EdgeInsets.all(10),
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(30),
                                     border: Border.all(
@@ -203,7 +205,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         color: Colors.grey[300],
                                         size: 16,
                                       ),
-                                      SizedBox(width: 5),
+                                      const SizedBox(width: 5),
                                       Text(
                                         'Show QR Code',
                                         style: TextStyle(
@@ -222,7 +224,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ],
                   ),
                 ),
-                SizedBox(height: 40),
+                const SizedBox(height: 40),
                 if (_fullName != null) ...[
                   OpsiProfile(
                     icon: Icons.account_circle,
@@ -252,7 +254,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     setLoading: _setLoading,
                   ),
                 ] else ...[
-                  Center(child: CircularProgressIndicator())
+                  const Center(child: CircularProgressIndicator())
                 ],
                 SizedBox(height: 75),
                 Padding(
@@ -261,13 +263,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     onPressed: _signOut,
                     style: ElevatedButton.styleFrom(
                       foregroundColor: Colors.white,
-                      backgroundColor: Color(0xFFA41724),
-                      textStyle: TextStyle(
+                      backgroundColor: const Color(0xFFA41724),
+                      textStyle: const TextStyle(
                         fontSize: 18,
                       ),
-                      minimumSize: Size(double.infinity, 50),
+                      minimumSize: const Size(double.infinity, 50),
                     ),
-                    child: Text("Sign out"),
+                    child: const Text("Sign out"),
                   ),
                 ),
               ],
@@ -276,7 +278,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           if (_isLoading) // Add this block to show a loading indicator
             Container(
               color: Colors.black.withOpacity(0.5),
-              child: Center(
+              child: const Center(
                 child: CircularProgressIndicator(),
               ),
             ),
@@ -344,9 +346,10 @@ class _OpsiProfileState extends State<OpsiProfile> {
           return StatefulBuilder(
             builder: (BuildContext context, setState) {
               return AlertDialog(
-                title: Text('Change Username'),
+                title: const Text('Change Username'),
                 content: TextField(
-                  decoration: InputDecoration(hintText: 'Enter new username'),
+                  decoration:
+                      const InputDecoration(hintText: 'Enter new username'),
                   onChanged: (value) {
                     setState(() {
                       newUsername = value;
@@ -358,14 +361,14 @@ class _OpsiProfileState extends State<OpsiProfile> {
                     onPressed: () {
                       Navigator.of(context).pop();
                     },
-                    child: Text('Cancel'),
+                    child: const Text('Cancel'),
                   ),
                   TextButton(
                     onPressed: () {
                       Navigator.of(context).pop();
-                      _changeUsername(newUsername,phoneNumber);
+                      _changeUsername(newUsername, phoneNumber);
                     },
-                    child: Text('Save'),
+                    child: const Text('Save'),
                   ),
                 ],
               );
@@ -395,20 +398,19 @@ class _OpsiProfileState extends State<OpsiProfile> {
   void _changePin() async {
     String note = "change pin";
     String newNumber = widget.phoneNumber.replaceFirst('+62', '');
-    
-    await PhoneAuth().sendOTP(newNumber,
-      (String verificationId) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
+
+    await PhoneAuth().sendOTP(newNumber, (String verificationId) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
           builder: (context) => OTPVerification(
-          verificationId: verificationId,
-          phoneNumber: newNumber,
-          note: note,
+            verificationId: verificationId,
+            phoneNumber: newNumber,
+            note: note,
           ),
         ),
       );
-    });    
+    });
   }
 
   @override
@@ -420,8 +422,8 @@ class _OpsiProfileState extends State<OpsiProfile> {
         } else if (widget.text == "Change Username") {
           _formUsername(widget.fullName, widget.phoneNumber);
         } else if (widget.text == "Change Pin") {
-            _changePin();
-          } else {
+          _changePin();
+        } else {
           print("${widget.text} Di Tekan!");
         }
       },
@@ -436,8 +438,41 @@ class _OpsiProfileState extends State<OpsiProfile> {
           child: Icon(widget.icon),
         ),
         title: Text(widget.text),
-        trailing: Icon(Icons.arrow_forward_ios),
+        trailing: const Icon(Icons.arrow_forward_ios),
       ),
     );
   }
 }
+
+
+
+// class OpsiProfile extends StatelessWidget {
+//   final IconData icon;
+//   final String text;
+
+//   const OpsiProfile({Key? key, required this.icon, required this.text})
+//       : super(key: key);
+// @override
+//   Widget build(BuildContext context) {
+//     return GestureDetector(
+//       onTap: () {
+//         print("$text Di Tekan!");
+//       },
+//       child: ListTile(
+//         leading: Container(
+//           width: 40,
+//           height: 40,
+//           decoration: BoxDecoration(
+//             borderRadius: BorderRadius.circular(100),
+//             color: Colors.grey.withOpacity(0.1),
+//           ),
+//           child: Icon(icon),
+//         ),
+//         title: Text(text),
+//         trailing: const Icon(Icons.arrow_forward_ios),
+//       ),
+//     );
+//   }
+// }
+
+  

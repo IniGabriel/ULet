@@ -21,8 +21,6 @@ class _TransferPageState extends State<TransferPage> {
   List<String> _addedNumbers = [];
   final FirebaseService _firebaseService = FirebaseService();
 
-
-
   Future<void> _getPhoneNumber() async {
     try {
       String phoneNumber = await PhoneAuth().getCurrentUserPhoneNumber();
@@ -56,18 +54,19 @@ class _TransferPageState extends State<TransferPage> {
     }
   }
 
-Future<void> _deletePhoneNumber(String phoneNumber) async {
-  try {
-    await _firebaseService.deletePhoneNumber(phoneNumber);
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Number Deleted: $phoneNumber')));
-    setState(() {
-      _addedNumbers.remove(phoneNumber);
-    });
-  } catch (e) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
+  Future<void> _deletePhoneNumber(String phoneNumber) async {
+    try {
+      await _firebaseService.deletePhoneNumber(phoneNumber);
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Number Deleted: $phoneNumber')));
+      setState(() {
+        _addedNumbers.remove(phoneNumber);
+      });
+    } catch (e) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(e.toString())));
+    }
   }
-}
-
 
   @override
   void initState() {
@@ -158,20 +157,21 @@ Future<void> _deletePhoneNumber(String phoneNumber) async {
                                 color: Colors.transparent,
                                 child: InkWell(
                                   borderRadius: BorderRadius.circular(30.0),
-                                 onTap: () async {
-  final addedNumber = await Navigator.push(
-    context,
-    MaterialPageRoute(builder: (context) => AddNumberPage()),
-  );
-  if (addedNumber != null) {
-    setState(() {
-      _addedNumbers.add(addedNumber);
-      print("Added Number: $addedNumber");
-      print("All Numbers: $_addedNumbers");
-    });
-  }
-},
-
+                                  onTap: () async {
+                                    final addedNumber = await Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              AddNumberPage()),
+                                    );
+                                    if (addedNumber != null) {
+                                      setState(() {
+                                        _addedNumbers.add(addedNumber);
+                                        print("Added Number: $addedNumber");
+                                        print("All Numbers: $_addedNumbers");
+                                      });
+                                    }
+                                  },
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
@@ -210,7 +210,8 @@ Future<void> _deletePhoneNumber(String phoneNumber) async {
                                   onTap: () {
                                     Navigator.push(
                                       context,
-                                      MaterialPageRoute(builder: (context) => HistoryPage()),
+                                      MaterialPageRoute(
+                                          builder: (context) => HistoryPage()),
                                     );
                                   },
                                   child: Row(
@@ -239,56 +240,56 @@ Future<void> _deletePhoneNumber(String phoneNumber) async {
                           ),
                         ),
                         SizedBox(height: 10),
-                      Container(
-                        width: screenWidth * 0.36,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(30.0),
-                        ),
-                        child: Material(
-                          color: Colors.transparent,
-                          child: InkWell(
+                        Container(
+                          width: screenWidth * 0.36,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
                             borderRadius: BorderRadius.circular(30.0),
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => TopUp()),
-                              );
-                            },
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 14.0, vertical: 10.0),
-                              child: Row(
-                                children: [
-                                  Icon(
-                                    Icons.atm_rounded,
-                                    color: Colors.black,
-                                    size: 35.0,
-                                  ),
-                                  SizedBox(width: 10),
-                                  Text(
-                                    'Top Up',
-                                    style: TextStyle(
+                          ),
+                          child: Material(
+                            color: Colors.transparent,
+                            child: InkWell(
+                              borderRadius: BorderRadius.circular(30.0),
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => TopUp()),
+                                );
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 14.0, vertical: 10.0),
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      Icons.atm_rounded,
                                       color: Colors.black,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
+                                      size: 35.0,
                                     ),
-                                  ),
-                                ],
+                                    SizedBox(width: 10),
+                                    Text(
+                                      'Top Up',
+                                      style: TextStyle(
+                                        color: Colors.black,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
                     ),
                   ),
                 ],
               ),
             ),
           ),
-Expanded(
+          Expanded(
             child: ListView.builder(
               itemCount: _addedNumbers.length,
               itemBuilder: (context, index) {
@@ -296,7 +297,7 @@ Expanded(
                   title: Text(_addedNumbers[index]),
                   // Tambahkan widget IconButton untuk hapus nomor jika dibutuhkan
                   // Misalnya:
-trailing: IconButton(
+                  trailing: IconButton(
                     icon: Icon(Icons.delete, color: Colors.red),
                     onPressed: () => _deletePhoneNumber(_addedNumbers[index]),
                   ),
