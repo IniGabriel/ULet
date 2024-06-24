@@ -101,103 +101,124 @@ class _HistoryPageState extends State<HistoryPage> {
                   return Center(child: Text('No transaction history found.'));
                 }
 
-                return ListView.builder(
-                  itemCount: snapshot.data!.docs.length,
-                  itemBuilder: (context, index) {
-                    var data = snapshot.data!.docs[index];
+return ListView.builder(
+  itemCount: snapshot.data!.docs.length,
+  itemBuilder: (context, index) {
+    var data = snapshot.data!.docs[index];
 
-                    // Get common transaction details
-                    String transactionType = data['transaction_type'];
-                    String description = data['description'];
-                    String senderName = data['sender_name'];
-                    String recipientName = data['recipient_name'];
-                    String transactionDirection = data['transaction_direction'];
+    // Get common transaction details
+    String transactionType = data['transaction_type'];
+    String description = data['description'] ?? '';
+    String senderName = '';
+    String recipientName = '';
+    String transactionDirection = '';
 
-                    // Determine trailing widget based on transaction type
-                    Widget trailingWidget;
-                    if (transactionType == 'transfer') {
-                      trailingWidget = Text(
-                        '-${NumberFormat.currency(locale: 'id_ID', symbol: 'Rp. ', decimalDigits: 0).format(data['amount'])}',
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-                      );
-                    } else if (transactionType == 'top_up') {
-                      trailingWidget = Text(
-                        '+${NumberFormat.currency(locale: 'id_ID', symbol: 'Rp. ', decimalDigits: 0).format(data['amount'])}',
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-                      );
-                    } else if (transactionType == 'receive') {
-                      trailingWidget = Text(
-                        '+${NumberFormat.currency(locale: 'id_ID', symbol: 'Rp. ', decimalDigits: 0).format(data['amount'])}',
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-                      );
-                    } else {
-                      trailingWidget = Text(
-                        'Other Transaction',
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-                      );
-                    }
+    // Debug prints
+    print('Document data: ${data.data()}');
+    print('Description: $description');
+
+    try {
+      senderName = data['sender_name'];
+    } catch (e) {
+      // sender_name tidak ada di dokumen
+    }
+
+    try {
+      recipientName = data['recipient_name'];
+    } catch (e) {
+      // recipient_name tidak ada di dokumen
+    }
+
+    try {
+      transactionDirection = data['transaction_direction'];
+    } catch (e) {
+      // transaction_direction tidak ada di dokumen
+    }
 
 
-// Determine title and subtitle based on transaction direction
-String title;
-String subtitle;
+    Widget trailingWidget;
+    if (transactionType == 'transfer') {
+      trailingWidget = Text(
+        '-${NumberFormat.currency(locale: 'id_ID', symbol: 'Rp. ', decimalDigits: 0).format(data['amount'])}',
+        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+      );
+    } else if (transactionType == 'top_up') {
+      trailingWidget = Text(
+        '+${NumberFormat.currency(locale: 'id_ID', symbol: 'Rp. ', decimalDigits: 0).format(data['amount'])}',
+        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+      );
+    } else if (transactionType == 'receive') {
+      trailingWidget = Text(
+        '+${NumberFormat.currency(locale: 'id_ID', symbol: 'Rp. ', decimalDigits: 0).format(data['amount'])}',
+        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+      );
+    } else {
+      trailingWidget = Text(
+        'Other Transaction',
+        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+      );
+    }
 
-if (transactionType == 'top_up') {
-    title = 'Sent to $recipientName';
-    subtitle = 'Top-up';
-} else if (transactionDirection == 'sent') {
-    title = 'Sent to $recipientName';
-    subtitle = 'Transferred To';
-} else if (transactionDirection == 'received') {
-    title = 'Received from $senderName';
-    subtitle = 'Transferred From';
-} else {
-    title = 'Unknown';
-    subtitle = 'Unknown';
-}
+    String title;
+    String subtitle;
 
-                    return Column(
-                      children: [
-                        Container(
-                          width: double.infinity,
-                          color: Color(0xFFFCEDEE), // Set background color
-                          padding: EdgeInsets.symmetric(horizontal: 25, vertical: 10), // Adjust padding as needed
-                          child: ListTile(
-                            contentPadding: EdgeInsets.zero, // Remove ListTile padding
-                            title: Text(
-                              '${DateFormat.yMMMMd().add_jm().format(data['transaction_date'].toDate())}',
-                              style: TextStyle(fontSize: 12), // Set font size for title
-                            ),
-                            subtitle: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  transactionType.toUpperCase(),
-                                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
-                                ),
-                                SizedBox(height: 5),
-                                Text(
-                                  title,
-                                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
-                                ),
-                                SizedBox(height: 5),
-                                Text(
-                                  description,
-                                  style: TextStyle(fontStyle: FontStyle.italic, fontSize: 12),
-                                ),
-                              ],
-                            ),
-                            trailing: trailingWidget,
-                          ),
-                        ),
-                        SizedBox(height: 10), // Add space between containers
-                      ],
-                    );
-                  },
-                );
+    if (transactionType == 'top_up') {
+      title = 'Top Up';
+      subtitle = description;
+    } else if (transactionDirection == 'sent') {
+      title = 'Sent to $recipientName';
+      subtitle = 'Transferred To';
+    } else if (transactionDirection == 'received') {
+      title = 'Received from $senderName';
+      subtitle = 'Transferred From';
+    } else {
+      title = 'Unknown';
+      subtitle = 'Unknown';
+    }
+
+    return Column(
+      children: [
+        Container(
+          width: double.infinity,
+          color: Color(0xFFFCEDEE), // Set background color
+          padding: EdgeInsets.symmetric(horizontal: 25, vertical: 10), // Adjust padding as needed
+          child: ListTile(
+            contentPadding: EdgeInsets.zero, // Remove ListTile padding
+            title: Text(
+              '${DateFormat.yMMMMd().add_jm().format(data['transaction_date'].toDate())}',
+              style: TextStyle(fontSize: 12), // Set font size for title
+            ),
+            subtitle: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  transactionType.toUpperCase(),
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+                ),
+                SizedBox(height: 5),
+                Text(
+                  title,
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+                ),
+                SizedBox(height: 5),
+                Text(
+                  description,
+                  style: TextStyle(fontStyle: FontStyle.italic, fontSize: 12),
+                ),
+              ],
+            ),
+            trailing: trailingWidget,
+          ),
+        ),
+        SizedBox(height: 10),
+      ],
+    );
+  },
+);
+
               },
             ),
-          ),
+          ),SizedBox(height: 50,)
         ],
       ),
     );

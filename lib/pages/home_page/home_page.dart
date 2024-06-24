@@ -78,7 +78,7 @@ class _HomePageState extends State<HomePage> {
               width: 360,
               height: 140,
               decoration: BoxDecoration(
-                color: Color(0xFFA41724),
+                color: Color.fromARGB(255, 164, 23, 36),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Column(
